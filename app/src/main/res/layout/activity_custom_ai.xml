@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CustomAi">
+
+    <!-- Background Image (Optional) -->
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/animatedai1" />
+
+    <!-- Transparent overlay -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#AA000000" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="24dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <!-- Top Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progressbar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:indeterminate="false"
+                android:progress="33"
+                android:progressTint="@color/white"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/black" />
+
+            <!-- Header -->
+            <TextView
+                android:id="@+id/headerText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Choose Your AI Avatar"
+                android:textColor="@color/white"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="20dp"
+                android:fontFamily="@font/spacemono"
+                android:gravity="center" />
+
+
+            <!-- Grid for Avatars -->
+            <GridLayout
+                android:id="@+id/avatarGrid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="1"
+                android:alignmentMode="alignMargins"
+                android:rowOrderPreserved="false"
+                android:layout_marginBottom="20dp"
+                android:useDefaultMargins="true">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_gravity="center"
+                    app:cardBackgroundColor="#4DFFFFFF"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="6dp">
+                    <ImageView
+                        android:id="@+id/avatar1"
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"
+                        android:src="@drawable/avatar1"
+                        android:scaleType="centerCrop"
+                        android:layout_gravity="center"
+                        android:background="@drawable/avatar_selector" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_gravity="center"
+                    app:cardBackgroundColor="#4DFFFFFF"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="6dp">
+                    <ImageView
+                        android:id="@+id/avatar2"
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"
+                        android:src="@drawable/avatar2"
+                        android:scaleType="centerCrop"
+                        android:layout_gravity="center"
+                        android:background="@drawable/avatar_selector" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_gravity="center"
+                    app:cardBackgroundColor="#4DFFFFFF"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="6dp">
+                    <ImageView
+                        android:id="@+id/avatar3"
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"
+                        android:src="@drawable/avatar3"
+                        android:scaleType="centerCrop"
+                        android:layout_gravity="center"
+                        android:background="@drawable/avatar_selector" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_gravity="center"
+                    app:cardBackgroundColor="#4DFFFFFF"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="6dp">
+                    <ImageView
+                        android:id="@+id/avatar4"
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"
+                        android:src="@drawable/avatar4"
+                        android:scaleType="centerCrop"
+                        android:layout_gravity="center"
+                        android:background="@drawable/avatar_selector" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_gravity="center"
+                    app:cardBackgroundColor="#4DFFFFFF"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="6dp">
+                    <ImageView
+                        android:id="@+id/avatar5"
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"
+                        android:src="@drawable/avatar5"
+                        android:scaleType="centerCrop"
+                        android:layout_gravity="center"
+                        android:background="@drawable/avatar_selector" />
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_gravity="center"
+                    app:cardBackgroundColor="#4DFFFFFF"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="6dp">
+                    <ImageView
+                        android:id="@+id/avatar6"
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"
+                        android:src="@drawable/avatar6"
+                        android:scaleType="centerCrop"
+                        android:layout_gravity="center"
+                        android:background="@drawable/avatar_selector" />
+                </androidx.cardview.widget.CardView>
+
+
+
+            </GridLayout>
+
+            <Button
+                android:id="@+id/btnContinue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Continue"
+                android:backgroundTint="@color/black"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:fontFamily="@font/spacemono" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

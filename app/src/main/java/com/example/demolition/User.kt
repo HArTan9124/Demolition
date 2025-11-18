@@ -1,0 +1,10 @@
+package com.example.demolition
+
+data class User(
+    val firstName: String = "",
+    val lastName: String = "",
+    val phone: String = "",
+    val age: String = "",
+    val location: String = "",
+    val gender: String = ""
+)

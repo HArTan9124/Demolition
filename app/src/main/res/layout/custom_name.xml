@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/custom_ai_frame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/animatedai1"
+    android:fitsSystemWindows="true"
+    tools:context=".CustomAi">
+
+    <!-- Semi-transparent black overlay -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#AA000000" />
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="24dp">
+
+            <ProgressBar
+                android:id="@+id/progressbar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:indeterminate="false"
+                android:progress="100"
+                android:progressTint="@color/white"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/black" />
+
+            <!-- Header -->
+            <TextView
+                android:id="@+id/headerText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🤖 Give Life to Your AI"
+                android:textSize="26sp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:fontFamily="@font/spacemono"
+                android:gravity="center"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Quote -->
+            <TextView
+                android:id="@+id/quoteText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="“AI is not just code, it’s creativity powered by logic.”"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
+                android:fontFamily="@font/spacemono"
+                android:gravity="center"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Avatar in card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="260dp"
+                android:layout_height="260dp"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="130dp"
+                app:cardElevation="12dp"
+                app:cardBackgroundColor="#22FFFFFF"
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:id="@+id/selectedAvatar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/avatar1"
+                    android:background="@drawable/avatar_selector" />
+            </androidx.cardview.widget.CardView>
+
+            <!-- AI Name Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Give your AI a unique name"
+                app:boxBackgroundMode="filled"
+                app:boxBackgroundColor="#1AFFFFFF"
+                app:boxStrokeColor="#00D9FF"
+                app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusTopEnd="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusBottomEnd="12dp"
+                android:layout_marginBottom="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextAiName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@android:color/transparent"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/darker_gray"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/spacemono" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Save Button -->
+            <Button
+                android:id="@+id/btnSaveAiName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Save and Continue"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="#00D9FF"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:fontFamily="@font/spacemono"
+                android:padding="12dp" />
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>
