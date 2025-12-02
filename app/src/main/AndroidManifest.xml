@@ -12,6 +12,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Demolition">
         <activity
+            android:name=".ChapterViewer"
+            android:exported="false" />
+        <activity
+            android:name=".sst"
+            android:exported="false" />
+        <activity
+            android:name=".English"
+            android:exported="false" />
+        <activity
+            android:name=".Science"
+            android:exported="false" />
+        <activity
+            android:name=".Math"
+            android:exported="false" />
+        <activity
+            android:name=".SplashScreen"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".UserData"
             android:exported="false" />
         <activity
@@ -25,13 +49,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="false" />
     </application>
 
 </manifest>

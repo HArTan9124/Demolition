@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_chapters"
+        android:title="Chapters"
+        android:icon="@drawable/book" />
+
+    <item
+        android:id="@+id/nav_quiz"
+        android:title="Quiz"
+        android:icon="@drawable/quiz" />
+
+    <item
+        android:id="@+id/nav_ai"
+        android:title="AI Help"
+        android:icon="@drawable/ai" />
+
+</menu>
