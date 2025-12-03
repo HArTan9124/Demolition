@@ -5,122 +5,128 @@
     android:id="@+id/custom_ai_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/animatedai1"
+    android:background="#0D0D0D"
     android:fitsSystemWindows="true"
     tools:context=".CustomAi">
 
-    <!-- Semi-transparent black overlay -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#AA000000" />
-
-    <!-- Scrollable Content -->
+    <!-- Scrollable Main Container -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="24dp"
         android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="24dp">
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
+            <!-- Progress Bar -->
             <ProgressBar
                 android:id="@+id/progressbar"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="8dp"
-                android:indeterminate="false"
+                android:max="100"
                 android:progress="100"
-                android:progressTint="@color/white"
-                android:layout_marginBottom="16dp"
-                android:backgroundTint="@color/black" />
+                android:progressTint="#00FFD9"
+                android:backgroundTint="#222222"
+                android:layout_marginBottom="22dp" />
 
-            <!-- Header -->
+            <!-- Neon Header -->
             <TextView
                 android:id="@+id/headerText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🤖 Give Life to Your AI"
-                android:textSize="26sp"
-                android:textColor="@color/white"
-                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textSize="30sp"
                 android:fontFamily="@font/spacemono"
+                android:textStyle="bold"
+                android:shadowColor="#00FFD9"
+                android:shadowRadius="20"
                 android:gravity="center"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="10dp" />
 
             <!-- Quote -->
             <TextView
                 android:id="@+id/quoteText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="“AI is not just code, it’s creativity powered by logic.”"
-                android:textSize="14sp"
-                android:textColor="@android:color/darker_gray"
+                android:text="“AI is not just code — it’s your imagination, expressed.”"
+                android:textColor="#9E9E9E"
+                android:textSize="15sp"
                 android:fontFamily="@font/spacemono"
                 android:gravity="center"
-                android:layout_marginBottom="20dp" />
+                android:layout_marginBottom="28dp" />
 
-            <!-- Avatar in card -->
+            <!-- Avatar Glass Card -->
             <androidx.cardview.widget.CardView
-                android:layout_width="260dp"
-                android:layout_height="260dp"
-                android:layout_marginBottom="20dp"
-                app:cardCornerRadius="130dp"
-                app:cardElevation="12dp"
-                app:cardBackgroundColor="#22FFFFFF"
-                android:layout_gravity="center">
+                android:id="@+id/avatarCard"
+                android:layout_width="280dp"
+                android:layout_height="280dp"
+                android:layout_marginBottom="26dp"
+                android:layout_gravity="center"
+                app:cardCornerRadius="140dp"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="18dp"
+                app:cardBackgroundColor="@android:color/transparent">
 
-                <ImageView
-                    android:id="@+id/selectedAvatar"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/avatar1"
-                    android:background="@drawable/avatar_selector" />
+                    android:background="@drawable/glass_bg"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/selectedAvatar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/avatar1"
+                        android:scaleType="centerCrop"
+                        android:background="@drawable/avatar_selector"
+                        android:clipToOutline="true" />
+                </LinearLayout>
+
             </androidx.cardview.widget.CardView>
 
             <!-- AI Name Input -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Give your AI a unique name"
-                app:boxBackgroundMode="filled"
-                app:boxBackgroundColor="#1AFFFFFF"
-                app:boxStrokeColor="#00D9FF"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
-                app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp"
-                android:layout_marginBottom="16dp">
+                android:hint="Name your AI"
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="#00FFD9"
+                app:hintTextColor="@color/white"
+                app:boxStrokeWidth="2dp"
+                android:layout_marginBottom="20dp"
+                android:textColorHint="#AAAAAA">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextAiName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@android:color/transparent"
-                    android:textColor="@android:color/white"
-                    android:textColorHint="@android:color/darker_gray"
+                    android:textColor="#FFFFFF"
                     android:textSize="18sp"
-                    android:fontFamily="@font/spacemono" />
+                    android:padding="12dp"
+                    android:fontFamily="@font/spacemono"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Save Button -->
+            <!-- Save & Continue -->
             <Button
                 android:id="@+id/btnSaveAiName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Save and Continue"
-                android:layout_marginTop="12dp"
-                android:backgroundTint="#00D9FF"
-                android:textColor="@color/black"
-                android:textStyle="bold"
+                android:layout_height="60dp"
+                android:text="Save / Continue ➡️"
+                android:textColor="#FFFFFF"
                 android:fontFamily="@font/spacemono"
-                android:padding="12dp" />
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:background="@drawable/btn_next"
+                android:layout_marginTop="10dp" />
 
         </LinearLayout>
     </ScrollView>
+
 </FrameLayout>

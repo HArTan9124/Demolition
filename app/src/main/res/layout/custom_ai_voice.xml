@@ -1,145 +1,140 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CustomAi"
-    android:background="@drawable/animatedai1">
+    android:background="#0D0D0D">
 
-    <!-- Dark Gradient Overlay -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/gradient_overlay_funky" />
-
-    <!-- Main Content -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:padding="24dp"
-        android:layout_gravity="center"
-        android:background="@android:color/transparent">
+        android:padding="22dp">
 
-        <!-- Progress Bar -->
+        <!-- Top Progress -->
         <ProgressBar
             android:id="@+id/progressbar"
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="8dp"
-            android:indeterminate="false"
             android:progress="68"
+            android:max="100"
             android:progressTint="#00FFD9"
-            android:backgroundTint="@android:color/black"
-            android:layout_marginBottom="24dp" />
+            android:backgroundTint="#222222"
+            android:layout_marginBottom="26dp" />
 
-        <!-- Funky Header -->
+        <!-- Header -->
         <TextView
             android:id="@+id/fullscreen_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="🎤 Choose Your AI Voice"
-            android:textSize="26sp"
-            android:textColor="#FFFFFF"
+            android:textSize="28sp"
             android:textStyle="bold"
-            android:fontFamily="@font/spacemono"
-            android:shadowColor="#00FFFF"
-            android:shadowDx="1"
-            android:shadowDy="1"
-            android:shadowRadius="5"
-            android:layout_marginBottom="12dp" />
-
-        <!-- AI Avatar -->
-        <ImageView
-            android:id="@+id/aiAvatar"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:src="@drawable/avatar1"
-            android:scaleType="centerCrop"
-            android:background="@drawable/avatar_selector"
-            android:layout_marginBottom="20dp"
-            android:elevation="8dp" />
-
-        <!-- Spinner Label -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🎧 Select Voice Style"
-            android:textSize="18sp"
             android:textColor="#FFFFFF"
             android:fontFamily="@font/spacemono"
-            android:layout_marginBottom="8dp" />
-
-        <!-- Spinner -->
-        <Spinner
-            android:id="@+id/languageSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:popupBackground="#000000"
-            android:background="@drawable/spinner_funky"
-            android:padding="14dp"
-            android:textAlignment="center"
+            android:shadowColor="#00FFD9"
+            android:shadowRadius="18"
             android:layout_marginBottom="16dp" />
 
-        <!-- Text Input for AI Speech -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Glassmorphic Card -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:boxBackgroundMode="filled"
-            app:boxBackgroundColor="#1F1B24"
-            app:boxStrokeColor="#00FFD9"
-            app:hintTextColor="@color/white"
-            android:layout_marginBottom="20dp"
-            android:hint="💬 Type your AI's message">
+            android:padding="20dp"
+            android:orientation="vertical"
+            android:background="@drawable/glass_bg"
+            android:elevation="12dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextSpeechInput"
+            <!-- AI Avatar -->
+            <ImageView
+                android:id="@+id/aiAvatar"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:src="@drawable/avatar1"
+                android:scaleType="centerCrop"
+                android:background="@drawable/avatar_selector"
+                android:clipToOutline="true"
+                android:elevation="14dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="22dp" />
+
+            <!-- "Select Voice Style" -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🎧 Voice Style"
+                android:textColor="#00FFD9"
+                android:textSize="18sp"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/spacemono" />
+
+            <!-- Spinner -->
+            <Spinner
+                android:id="@+id/languageSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textColorHint="#CCCCCC"
+                android:background="@drawable/spinner_neon"
+                android:popupBackground="@color/black"
+                android:padding="14dp"
+                android:layout_marginBottom="22dp" />
+
+            <!-- Input Box -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="#00FFD9"
+                app:boxStrokeWidth="2dp"
+                app:hintTextColor="@color/white"
+                android:hint="💬 Type message for AI"
+                android:layout_marginBottom="22dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextSpeechInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#CCCCCC"
+                    android:textSize="17sp"
+                    android:padding="12dp"
+                    android:fontFamily="@font/spacemono" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Speak Button -->
+            <Button
+                android:id="@+id/dummy_button"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="🔊 Generate Voice"
+                android:textColor="#000000"
                 android:textSize="18sp"
+                android:background="@drawable/btn_cyber"
+                android:fontFamily="@font/spacemono"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Speak Progress -->
+            <ProgressBar
+                android:id="@+id/speakProgress"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:indeterminate="true"
+                android:visibility="gone"
+                android:progressTint="#00FFD9"
+                android:backgroundTint="#333333"
+                android:layout_marginBottom="26dp" />
+
+            <!-- Next Button -->
+            <Button
+                android:id="@+id/btnNext"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="➡️ Continue"
+                android:textSize="18sp"
+                android:background="@drawable/btn_next"
+                android:textColor="#FFFFFF"
                 android:fontFamily="@font/spacemono" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Speak Button -->
-        <Button
-            android:id="@+id/dummy_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🔊 Speak"
-            android:textSize="18sp"
-            android:backgroundTint="#00FFD9"
-            android:textColor="#000000"
-            android:fontFamily="@font/spacemono"
-            android:paddingHorizontal="24dp"
-            android:paddingVertical="12dp"
-            android:layout_marginBottom="16dp"
-            android:elevation="6dp" />
-
-        <!-- Speak Progress -->
-        <ProgressBar
-            android:id="@+id/speakProgress"
-            android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:layout_marginBottom="20dp"
-            android:indeterminate="true"
-            android:visibility="gone"
-            android:progressTint="#00FFD9"
-            android:backgroundTint="@color/black" />
-
-        <!-- Next Button -->
-        <Button
-            android:id="@+id/btnNext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="➡️ Next"
-            android:textSize="18sp"
-            android:backgroundTint="#FF00C3"
-            android:textColor="#FFFFFF"
-            android:fontFamily="@font/spacemono"
-            android:paddingHorizontal="24dp"
-            android:paddingVertical="12dp"
-            android:elevation="6dp" />
+        </LinearLayout>
     </LinearLayout>
-</FrameLayout>
+</ScrollView>

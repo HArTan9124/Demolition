@@ -1,14 +1,231 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Cources">
+    android:fillViewport="true"
+    android:background="#F3F5F9">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:padding="18dp">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Syllabus"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:textColor="#1A1A1A"
+            android:fontFamily="@font/spacemono"
+            android:layout_gravity="center"
+            android:paddingBottom="6dp"
+            android:layout_marginBottom="14dp"/>
+
+        <View
+            android:layout_width="60dp"
+            android:layout_height="4dp"
+            android:background="#7A4DFF"
+            android:layout_gravity="center"
+            android:layout_marginBottom="24dp"/>
+
+
+        <LinearLayout
+            android:id="@+id/mathCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:background="@drawable/card_white"
+            android:layout_marginBottom="18dp">
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="Subject 01"
+                android:textSize="12sp"
+                android:textColor="#888888"
+                android:fontFamily="@font/spacemono"/>
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="Mathematics"
+                android:textSize="20sp"
+                android:textColor="#1A1A1A"
+                android:textStyle="bold"
+                android:fontFamily="@font/spacemono"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="Important concepts and logical reasoning for problem-solving."
+                android:layout_marginTop="8dp"
+                android:textColor="#555555"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="Start"
+                android:textColor="#7A4DFF"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:fontFamily="@font/spacemono"
+                android:layout_gravity="end"
+                android:layout_marginTop="10dp"/>
+        </LinearLayout>
+
+
+        <!-- Science -->
+        <LinearLayout
+            android:id="@+id/scienceCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:background="@drawable/card_white"
+            android:layout_marginBottom="18dp">
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="Subject 02"
+                android:textSize="12sp"
+                android:textColor="#888888"
+                android:fontFamily="@font/spacemono"/>
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="Science"
+                android:textSize="20sp"
+                android:textColor="#1A1A1A"
+                android:textStyle="bold"
+                android:fontFamily="@font/spacemono"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="Learn through experiments and scientific reasoning."
+                android:layout_marginTop="8dp"
+                android:textColor="#555555"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="Start"
+                android:textColor="#7A4DFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/spacemono"
+                android:layout_gravity="end"
+                android:layout_marginTop="10dp"/>
+        </LinearLayout>
+
+
+        <!-- English -->
+        <LinearLayout
+            android:id="@+id/englishCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:background="@drawable/card_white"
+            android:layout_marginBottom="18dp">
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="Subject 03"
+                android:textSize="12sp"
+                android:textColor="#888888"
+                android:fontFamily="@font/spacemono"/>
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="English"
+                android:textSize="20sp"
+                android:textColor="#1A1A1A"
+                android:textStyle="bold"
+                android:fontFamily="@font/spacemono"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="Improve grammar, vocabulary and reading comprehension."
+                android:layout_marginTop="8dp"
+                android:textColor="#555555"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="Start"
+                android:textColor="#7A4DFF"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:fontFamily="@font/spacemono"
+                android:layout_gravity="end"
+                android:layout_marginTop="10dp"/>
+        </LinearLayout>
+
+
+        <!-- SST -->
+        <LinearLayout
+            android:id="@+id/sstCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:background="@drawable/card_white"
+            android:layout_marginBottom="18dp">
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="Subject 04"
+                android:textSize="12sp"
+                android:textColor="#888888"
+                android:fontFamily="@font/spacemono"/>
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="Social Science"
+                android:textSize="20sp"
+                android:textColor="#1A1A1A"
+                android:textStyle="bold"
+                android:fontFamily="@font/spacemono"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="History, Civics, Geography and Economics explained simply."
+                android:layout_marginTop="8dp"
+                android:textColor="#555555"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:text="Start"
+                android:textColor="#7A4DFF"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:fontFamily="@font/spacemono"
+                android:layout_gravity="end"
+                android:layout_marginTop="10dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

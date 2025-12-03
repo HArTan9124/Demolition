@@ -11,10 +11,10 @@
         android:icon="@drawable/course"
         android:title="Courses" />
 
-    <item
-        android:id="@+id/nav_progress"
-        android:icon="@drawable/progress"
-        android:title="Progress" />
+<!--    <item-->
+<!--        android:id="@+id/nav_progress"-->
+<!--        android:icon="@drawable/progress"-->
+<!--        android:title="Progress" />-->
 
     <item
         android:id="@+id/nav_profile"

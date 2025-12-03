@@ -56,9 +56,6 @@ class MainActivity : AppCompatActivity() {
         loadFragment(Home())
     }
 
-    /**
-     * DRAWER MENU USING IF–ELSE
-     */
     private fun setupDrawerMenu() {
         val toggle = ActionBarDrawerToggle(
             this,
@@ -76,7 +73,7 @@ class MainActivity : AppCompatActivity() {
 
             if (id == R.id.nav_home) loadFragment(Home())
             else if (id == R.id.nav_courses) loadFragment(Cources())
-            else if (id == R.id.nav_progress) loadFragment(Progress())
+//            else if (id == R.id.nav_progress) loadFragment(Progress())
             else if (id == R.id.nav_profile) loadFragment(Profile())
 
             true
@@ -91,7 +88,7 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_home -> loadFragment(Home())
                 R.id.nav_courses -> loadFragment(Cources())
-                R.id.nav_progress -> loadFragment(Progress())
+//                R.id.nav_progress -> loadFragment(Progress())
                 R.id.nav_profile -> loadFragment(Profile())
             }
             true
