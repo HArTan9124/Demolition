@@ -2,9 +2,8 @@ package com.example.demolition
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.demolition.databinding.FragmentHomeBinding
@@ -14,8 +13,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import kotlin.jvm.java
-
 
 class Home : Fragment() {
 
@@ -30,17 +27,21 @@ class Home : Fragment() {
     private lateinit var timetableAdapter: TimetableAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: android.view.LayoutInflater, container: android.view.ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
+    ): android.view.View {
+
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         setupRecyclerView()
         setupCardClicks()
+        setupSyncButton()
         loadStudentClass()
 
         return binding.root
     }
+
+    // ----------------- TIMETABLE RECYCLER -------------------
 
     private fun setupRecyclerView() {
         timetableAdapter = TimetableAdapter(timetableList)
@@ -48,8 +49,9 @@ class Home : Fragment() {
         binding.rvTimetable.adapter = timetableAdapter
     }
 
-    private fun setupCardClicks() {
+    // ----------------- COURSE CARDS -------------------------
 
+    private fun setupCardClicks() {
         binding.cardMath.setOnClickListener {
             startActivity(Intent(requireContext(), Math::class.java))
         }
@@ -67,46 +69,42 @@ class Home : Fragment() {
         }
     }
 
+    // ----------------- LOAD STUDENT CLASS -------------------------
 
-    /**
-     * STEP 1 → Load student class + section from Realtime DB
-     * Correct Path: Users/UID/studentClass and Users/UID/section
-     */
     private fun loadStudentClass() {
         val uid = auth.currentUser?.uid ?: return
 
         val userRef = realtimeDB.getReference("Users/$uid")
 
-        userRef.get().addOnSuccessListener { snap ->
-            if (!snap.exists()) {
-                showError("User data missing in Realtime DB.")
-                return@addOnSuccessListener
+        userRef.get()
+            .addOnSuccessListener { snap ->
+                if (!snap.exists()) {
+                    showError("User data missing.")
+                    return@addOnSuccessListener
+                }
+
+                val studentClass = snap.child("studentClass").value?.toString()
+                val section = snap.child("section").value?.toString()
+
+                if (studentClass.isNullOrEmpty() || section.isNullOrEmpty()) {
+                    showError("Class or section missing.")
+                    return@addOnSuccessListener
+                }
+
+                val className = "$studentClass-$section"
+                loadTimeTableFromFirestore(className)
             }
-
-            val studentClass = snap.child("studentClass").value?.toString()
-            val section = snap.child("section").value?.toString()
-
-            if (studentClass.isNullOrEmpty() || section.isNullOrEmpty()) {
-                showError("Class or section not found.")
-                return@addOnSuccessListener
-            }
-
-            // Construct final class name → Example: "1-A"
-            val className = "${studentClass}-${section}"
-
-            loadTimeTableFromFirestore(className)
-        }
             .addOnFailureListener {
-                showError("Failed to load class information.")
+                showError("Failed to load class.")
+                Log.e("FIRESTORE", "Error loading student class", it)
             }
     }
 
-    /**
-     * STEP 2 → Load timetable from Firestore for class: "1-A"
-     */
+    // ----------------- FIXED FIRESTORE TIMETABLE PATH -------------------------
+
     private fun loadTimeTableFromFirestore(className: String) {
 
-        val orgId = "zQL49YoMJRfglot67ZYh9dDMpcF2"
+        val orgId = "PlOfx4BQ3pgUAwpEP1AUSKcK8tq1"
 
         firestore.collection("class_timetables")
             .document(orgId)
@@ -116,48 +114,57 @@ class Home : Fragment() {
             .addOnSuccessListener { document ->
 
                 if (!document.exists()) {
-                    showError("Timetable not found for class $className.")
+                    showError("No timetable found for $className.")
                     return@addOnSuccessListener
                 }
 
-                val slots = document.get("slots") as? List<Map<String, Any>>
+                val rawSlots = document.get("slots")
+
+                val slots = when (rawSlots) {
+                    is List<*> -> rawSlots.filterIsInstance<Map<String, Any>>()  // NORMAL LIST
+                    is Map<*, *> -> rawSlots.values.filterIsInstance<Map<String, Any>>() // MAP ✓
+                    else -> null
+                }
 
                 if (slots.isNullOrEmpty()) {
-                    showError("No timetable available.")
+                    showError("Empty timetable.")
                 } else {
                     processTimetableData(slots)
                 }
+
             }
-            .addOnFailureListener {
-                showError("Unable to fetch timetable.")
+            .addOnFailureListener { e ->
+                showError("Failed to load timetable.")
+                Log.e("FIRESTORE", "Timetable fetch error", e)
             }
     }
 
-    /**
-     * STEP 3 → Filter by day + show schedule
-     */
+
+    // ----------------- FILTER TODAY CLASSES -------------------------
+
     private fun processTimetableData(slots: List<Map<String, Any>>) {
         timetableList.clear()
 
-        val currentDay = SimpleDateFormat("EEEE", Locale.getDefault()).format(Calendar.getInstance().time)
-
-        var found = false
+        val today = SimpleDateFormat("EEEE", Locale.getDefault()).format(Calendar.getInstance().time)
+        var foundTodayClass = false
 
         for (item in slots) {
             val day = item["day"]?.toString() ?: ""
-            if (!day.equals(currentDay, ignoreCase = true)) continue
+            if (!day.equals(today, ignoreCase = true)) continue
 
             val subject = item["subject"]?.toString() ?: "Unknown"
             val index = (item["slotIndex"] as? Number)?.toInt() ?: -1
             val time = convertSlotToTime(index)
 
             timetableList.add(TimetableItem(subject, time))
-            found = true
+            foundTodayClass = true
         }
 
-        if (!found) {
-            showError("No classes for $currentDay.")
-        } else timetableAdapter.notifyDataSetChanged()
+        if (!foundTodayClass) {
+            showError("No classes today.")
+        } else {
+            timetableAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun convertSlotToTime(index: Int): String {
@@ -176,6 +183,65 @@ class Home : Fragment() {
         timetableList.clear()
         timetableList.add(TimetableItem(msg, ""))
         timetableAdapter.notifyDataSetChanged()
+    }
+
+    // ----------------- CLOUD SYNC BUTTON -------------------------
+
+    private fun setupSyncButton() {
+        binding.SyncWithCloud.setOnClickListener {
+            syncReportsToCloud()
+        }
+    }
+
+    // ----------------- FINAL FIRESTORE SYNC -------------------------
+
+    private fun syncReportsToCloud() {
+        val context = requireContext()
+        val reports = ReportManager.getReports(context)
+        val unsynced = reports.filter { !it.synced }
+
+        if (unsynced.isEmpty()) {
+            Toast.makeText(context, "Everything is already synced!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val db = FirebaseFirestore.getInstance()
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        var uploaded = 0
+        val total = unsynced.size
+
+        for (report in unsynced) {
+
+            val data = hashMapOf(
+                "name" to report.name,
+                "class" to report.studentClass,
+                "subject" to report.subject,
+                "chapter" to report.chapter,
+                "date" to report.date,
+                "time" to report.time,
+                "score" to report.score
+            )
+
+            db.collection("quiz_reports")
+                .document(uid)
+                .collection("reports")
+                .add(data)
+                .addOnSuccessListener {
+                    report.synced = true
+                    uploaded++
+
+                    ReportManager.saveReports(context, reports)
+
+                    if (uploaded == total) {
+                        Toast.makeText(context, "All reports synced!", Toast.LENGTH_LONG).show()
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(context, "Sync failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Log.e("FIRESTORE_SYNC", e.message.toString())
+                }
+        }
     }
 
     override fun onDestroyView() {

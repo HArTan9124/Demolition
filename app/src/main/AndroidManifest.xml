@@ -12,6 +12,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Demolition">
         <activity
+            android:name=".AiChatter"
+            android:exported="false"
+            android:theme="@style/Theme.Demolition" />
+        <activity
+            android:name=".QuizQuestionsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".ChapterViewer"
             android:exported="false" />
         <activity

@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         tvUserName = findViewById(R.id.tv_username)
-        ivUserProfile = findViewById(R.id.iv_profile_pic)
+        ivUserProfile = findViewById(R.id.ivToolbarPic)
 
         setupDrawerMenu()
         setupBottomNavigation()

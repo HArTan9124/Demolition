@@ -83,8 +83,8 @@
                         android:layout_weight="1"/>
 
                     <TextView
-                        android:id="@+id/tv_see_all"
-                        android:text="See All"
+                        android:id="@+id/Sync_with_cloud"
+                        android:text="Sync With cloud"
                         android:textSize="14sp"
                         android:fontFamily="@font/space"
                         android:textColor="#4285F4"
@@ -217,7 +217,7 @@
 
                             <TextView
                                 android:id="@+id/tv_geo_title"
-                                android:text="Geography"
+                                android:text="English"
                                 android:textSize="15sp"
 
                                 android:layout_height="wrap_content"
@@ -256,7 +256,7 @@
 
                             <TextView
                                 android:id="@+id/tv_history_title"
-                                android:text="History"
+                                android:text="Social Science"
 
                                 android:layout_height="wrap_content"
                                 android:layout_width="wrap_content"
@@ -270,7 +270,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_width="wrap_content"
                                 android:id="@+id/tv_history_lessons"
-                                android:text="10 Lessons"
+                                android:text="6 Lessons"
                                 android:textSize="12sp"
                                 android:fontFamily="@font/audi"
                                 android:layout_marginTop="2dp"/>
