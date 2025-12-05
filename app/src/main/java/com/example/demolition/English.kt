@@ -55,7 +55,10 @@ class English : AppCompatActivity() {
                 }
 
                 R.id.nav_ai -> {
-                    startActivity(Intent(this, AiChatterFrag::class.java))
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.container, AiChatterFrag())
+                        .addToBackStack(null)
+                        .commit()
                     true
                 }
 

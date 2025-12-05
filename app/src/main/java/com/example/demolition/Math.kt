@@ -47,6 +47,7 @@ class Math : AppCompatActivity() {
                 R.id.nav_ai -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.container, AiChatterFrag())
+                        .addToBackStack(null)
                         .commit()
                     true
                 }

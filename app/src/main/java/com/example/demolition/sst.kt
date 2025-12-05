@@ -46,8 +46,10 @@ class sst : AppCompatActivity() {
                 }
 
                 R.id.nav_ai -> {
-                    val intent = Intent(this, AiChatterFrag::class.java)
-                    startActivity(intent)
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.container, AiChatterFrag())
+                        .addToBackStack(null)
+                        .commit()
                     true
                 }
 
