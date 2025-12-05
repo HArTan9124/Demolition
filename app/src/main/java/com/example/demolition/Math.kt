@@ -45,8 +45,9 @@ class Math : AppCompatActivity() {
                 }
 
                 R.id.nav_ai -> {
-                    val intent = Intent(this, AiChatter::class.java)
-                    startActivity(intent)
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.container, AiChatterFrag())
+                        .commit()
                     true
                 }
 

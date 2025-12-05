@@ -46,7 +46,7 @@ class sst : AppCompatActivity() {
                 }
 
                 R.id.nav_ai -> {
-                    val intent = Intent(this, AiChatter::class.java)
+                    val intent = Intent(this, AiChatterFrag::class.java)
                     startActivity(intent)
                     true
                 }

@@ -55,7 +55,7 @@ class English : AppCompatActivity() {
                 }
 
                 R.id.nav_ai -> {
-                    startActivity(Intent(this, AiChatter::class.java))
+                    startActivity(Intent(this, AiChatterFrag::class.java))
                     true
                 }
 
