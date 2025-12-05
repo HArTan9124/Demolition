@@ -8,7 +8,7 @@ object GGUFChat {
 
     private const val TAG = "GGUFChat"
 
-    suspend fun ask(modelPath: String, prompt: String): String =
+    suspend fun ask(modelPath: String, prompt: String, context: String? = null): String =
         withContext(Dispatchers.IO) {
             
             // Check if native libraries are loaded
@@ -22,6 +22,13 @@ object GGUFChat {
                 // Validate model path
                 if (modelPath.isBlank()) {
                     throw IllegalArgumentException("Model path is empty")
+                }
+                
+                // Build final prompt (with context if available)
+                val finalPrompt = if (context != null) {
+                    context + "\n\n" + prompt
+                } else {
+                    prompt
                 }
 
                 Log.d(TAG, "Loading model from: $modelPath")
@@ -39,8 +46,8 @@ object GGUFChat {
                 }
                 Log.d(TAG, "Context created successfully, pointer: $ctxPtr")
 
-                Log.d(TAG, "Generating response for prompt: \"${prompt.take(50)}...\"")
-                val output = LlamaNative.generateText(ctxPtr, prompt)
+                Log.d(TAG, "Generating response for prompt: \"${finalPrompt.take(50)}...\"")
+                val output = LlamaNative.generateText(ctxPtr, finalPrompt)
                 Log.d(TAG, "Response generated (${output.length} chars): \"${output.take(100)}...\"")
 
                 // Clean up

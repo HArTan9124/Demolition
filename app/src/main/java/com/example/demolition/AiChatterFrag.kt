@@ -32,6 +32,10 @@ class AiChatterFrag : Fragment() {
     private var isModelLoading = true
     private var modelLoadError: String? = null
 
+    // RAG Pipeline
+    private val ragPipeline = com.example.demolition.rag.RAGPipeline()
+    private var isRagReady = false
+
     // View references
     private var recyclerView: RecyclerView? = null
     private var inputEditText: EditText? = null
@@ -84,9 +88,26 @@ class AiChatterFrag : Fragment() {
                     sendButton?.isEnabled = true
                     Log.d(TAG, "Model loaded successfully: $modelPath")
                     Toast.makeText(context, "AI Model Ready ✓", Toast.LENGTH_SHORT).show()
+                }
+                
+                // Initialize RAG pipeline
+                try {
+                    Log.d(TAG, "Initializing RAG pipeline...")
+                    ragPipeline.initialize(requireContext())
+                    isRagReady = true
+                    Log.d(TAG, "RAG pipeline ready with ${ragPipeline.getIndexSize()} chunks")
                     
-                    // Add a greeting message from the AI to show it's ready
-                    addGreeting()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "📚 Knowledge base loaded", Toast.LENGTH_SHORT).show()
+                        addGreeting()
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to initialize RAG pipeline", e)
+                    isRagReady = false
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "⚠ RAG initialization failed, using basic AI", Toast.LENGTH_SHORT).show()
+                        addGreeting()
+                    }
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to load model", e)
@@ -108,7 +129,12 @@ class AiChatterFrag : Fragment() {
 
     private fun addGreeting() {
         // Add a simple greeting from the AI
-        messages.add(ChatMessage("👋 Hello! I'm ready to help. Ask me anything!", false))
+        val greeting = if (isRagReady) {
+            "👋 Hello! I'm ready to help with your studies. Ask me anything about your curriculum!"
+        } else {
+            "👋 Hello! I'm ready to help. Ask me anything!"
+        }
+        messages.add(ChatMessage(greeting, false))
         adapter.notifyItemInserted(messages.size - 1)
         recyclerView?.scrollToPosition(messages.size - 1)
     }
@@ -142,7 +168,31 @@ class AiChatterFrag : Fragment() {
         // Generate AI response
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val reply = GGUFChat.ask(modelPath!!, question)
+                // Retrieve context using RAG (if available)
+                val context = if (isRagReady) {
+                    try {
+                        val ragResult = ragPipeline.query(question, topK = 3)
+                        if (ragResult.hasContext()) {
+                            Log.d(TAG, "RAG retrieved ${ragResult.getChunkCount()} relevant chunks")
+                            ragResult.augmentedPrompt
+                        } else {
+                            Log.d(TAG, "No relevant context found, using direct question")
+                            null
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "RAG query failed, falling back to direct question", e)
+                        null
+                    }
+                } else {
+                    null
+                }
+                
+                // Generate response with or without context
+                val reply = if (context != null) {
+                    GGUFChat.ask(modelPath!!, question, context)
+                } else {
+                    GGUFChat.ask(modelPath!!, question)
+                }
 
                 withContext(Dispatchers.Main) {
                     messages.add(ChatMessage(reply, false))
