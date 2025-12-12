@@ -9,8 +9,8 @@ import java.io.IOException
 object GGUFModelLoader {
 
     private const val TAG = "GGUFModelLoader"
-    private const val MODEL_ASSET_PATH = "models/gemma.gguf"
-    private const val MODEL_FILE_NAME = "gemma.gguf"
+    private const val MODEL_ASSET_PATH = "models/gemma1.gguf"
+    private const val MODEL_FILE_NAME = "gemma1.gguf"
 
     /**
      * Loads the GGUF model from assets to app's internal storage

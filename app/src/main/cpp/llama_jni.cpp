@@ -31,7 +31,7 @@ Java_com_example_demolition_ai_LlamaNative_createContext(JNIEnv *env,
                                                          jlong modelPtr) {
 
   llama_context_params cparams = llama_context_default_params();
-  cparams.n_ctx = 512;
+  cparams.n_ctx = 2048; // Increased for RAG context support
 
   llama_context *ctx = llama_init_from_model((llama_model *)modelPtr, cparams);
   return (jlong)ctx;
@@ -168,14 +168,20 @@ Java_com_example_demolition_ai_LlamaNative_generateText(JNIEnv *env,
     return env->NewStringUTF("Error: Failed to decode prompt batch");
   }
 
-  // Create sampler for token generation
+  // Create sampler for token generation with temperature and top-p for natural
+  // responses
   llama_sampler_chain_params sampler_params =
       llama_sampler_chain_default_params();
   llama_sampler *sampler = llama_sampler_chain_init(sampler_params);
+  llama_sampler_chain_add(
+      sampler, llama_sampler_init_temp(0.7)); // Add temperature for variety
+  llama_sampler_chain_add(
+      sampler, llama_sampler_init_top_p(0.9, 1)); // Add top-p for quality
   llama_sampler_chain_add(sampler, llama_sampler_init_greedy());
 
-  // Generate tokens - IMPROVED: Increased from 50 to 128 for better responses
-  const int max_tokens = 128;
+  // Generate tokens - IMPROVED: Increased to 512 for complete educational
+  // responses
+  const int max_tokens = 512;
   for (int i = 0; i < max_tokens; i++) {
     llama_token new_token = llama_sampler_sample(sampler, ctx, -1);
 

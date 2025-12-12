@@ -24,11 +24,26 @@ object GGUFChat {
                     throw IllegalArgumentException("Model path is empty")
                 }
                 
-                // Build final prompt (with context if available)
-                val finalPrompt = if (context != null) {
-                    context + "\n\n" + prompt
+                // Build Gemma-3 formatted prompt with proper instruction template
+                val gemmaPrompt = if (context != null && context.isNotBlank()) {
+                    // RAG-enhanced prompt with context
+                    """<start_of_turn>user
+You are a helpful educational assistant for students. Answer based ONLY on the following context.
+
+CONTEXT:
+$context
+
+QUESTION: $prompt
+
+Provide a clear, friendly answer using only the information from the context above. Be conversational and encouraging. Do not use ** or * symbols.<end_of_turn>
+<start_of_turn>model
+"""
                 } else {
-                    prompt
+                    // General educational prompt
+                    """<start_of_turn>user
+$prompt<end_of_turn>
+<start_of_turn>model
+"""
                 }
 
                 Log.d(TAG, "Loading model from: $modelPath")
@@ -46,8 +61,8 @@ object GGUFChat {
                 }
                 Log.d(TAG, "Context created successfully, pointer: $ctxPtr")
 
-                Log.d(TAG, "Generating response for prompt: \"${finalPrompt.take(50)}...\"")
-                val output = LlamaNative.generateText(ctxPtr, finalPrompt)
+                Log.d(TAG, "Generating response for prompt: \"${gemmaPrompt.take(80)}...\"")
+                val output = LlamaNative.generateText(ctxPtr, gemmaPrompt)
                 Log.d(TAG, "Response generated (${output.length} chars): \"${output.take(100)}...\"")
 
                 // Clean up

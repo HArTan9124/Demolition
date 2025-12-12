@@ -13,4 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
-app/src/main/assets/models/gemma.gguf
+app/src/main/assets/models/gemma1.gguf

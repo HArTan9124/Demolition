@@ -18,9 +18,9 @@ class sst : AppCompatActivity() {
         binding = ActivitySstBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Load Math Fragment into container
+        // Load SST Fragment into container
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, MathFrag())
+            .replace(R.id.container, sstfrag())
             .commit()
 
         setupBottomNav()
@@ -33,14 +33,14 @@ class sst : AppCompatActivity() {
 
                 R.id.nav_chapters -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.container, MathFrag())
+                        .replace(R.id.container, sstfrag())
                         .commit()
                     true
                 }
 
                 R.id.nav_quiz -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.container, QuizViewerFrag())
+                        .replace(R.id.container, QuizViewerFrag.newInstance("sst"))
                         .commit()
                     true
                 }
