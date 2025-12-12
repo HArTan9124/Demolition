@@ -1,8 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#FF808080</color>
     <color name="appbar">#6512FB</color>
+
+    <!-- Chat Background -->
+    <color name="chat_bg_start">#F8F9FA</color>
+    <color name="chat_bg_end">#E9ECEF</color>
+    
+    <!-- AI Message Bubble -->
+    <color name="ai_bubble_start">#E8EAF6</color>
+    <color name="ai_bubble_end">#C5CAE9</color>
+    <color name="ai_text">#1A237E</color>
+    
+    <!-- User Message Bubble -->
+    <color name="user_bubble_start">#667EEA</color>
+    <color name="user_bubble_end">#764BA2</color>
+    <color name="user_text">#FFFFFF</color>
+    
+    <!-- Input Area -->
+    <color name="input_bg">#FFFFFF</color>
+    <color name="input_border">#E0E0E0</color>
+    <color name="input_border_focused">#667EEA</color>
+    <color name="input_text">#212121</color>
+    <color name="input_hint">#9E9E9E</color>
+    
+    <!-- Send Button -->
+    <color name="send_btn_start">#667EEA</color>
+    <color name="send_btn_end">#764BA2</color>
+    
+    <!-- Status Colors -->
+    <color name="success">#4CAF50</color>
+    <color name="error">#F44336</color>
+    <color name="warning">#FF9800</color>
+    <color name="info">#2196F3</color>
+    
+    <!-- Shadows and Overlays -->
+    <color name="shadow_light">#1A000000</color>
+    <color name="overlay">#80000000</color>
 
 </resources>

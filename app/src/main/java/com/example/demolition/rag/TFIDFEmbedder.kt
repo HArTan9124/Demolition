@@ -94,4 +94,29 @@ class TFIDFEmbedder {
     fun isFitted(): Boolean {
         return totalDocuments > 0
     }
+    
+    /**
+     * Load state from cached data
+     */
+    fun loadState(docFreq: Map<String, Int>, total: Int) {
+        documentFrequency.clear()
+        documentFrequency.putAll(docFreq)
+        totalDocuments = total
+        
+        // Recompute IDF cache
+        idfCache.clear()
+        for ((term, df) in documentFrequency) {
+            idfCache[term] = computeIDF(df)
+        }
+    }
+    
+    /**
+     * Get document frequency map for caching
+     */
+    fun getDocumentFrequency(): Map<String, Int> = documentFrequency.toMap()
+    
+    /**
+     * Get total documents count for caching
+     */
+    fun getTotalDocuments(): Int = totalDocuments
 }

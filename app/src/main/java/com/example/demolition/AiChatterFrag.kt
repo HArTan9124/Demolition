@@ -126,7 +126,6 @@ class AiChatterFrag : Fragment() {
             }
         }
     }
-
     private fun addGreeting() {
         // Add a simple greeting from the AI
         val greeting = if (isRagReady) {
@@ -165,7 +164,18 @@ class AiChatterFrag : Fragment() {
             return
         }
 
-        // Generate AI response
+        // Check if it's a greeting - respond warmly without RAG
+        if (isGreeting(question)) {
+            lifecycleScope.launch {
+                val greeting = handleGreeting(question)
+                messages.add(ChatMessage(greeting, false))
+                adapter.notifyItemInserted(messages.size - 1)
+                recyclerView?.scrollToPosition(messages.size - 1)
+            }
+            return
+        }
+
+        // Generate AI response with RAG context
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 // Retrieve context using RAG (if available)
@@ -174,7 +184,7 @@ class AiChatterFrag : Fragment() {
                         val ragResult = ragPipeline.query(question, topK = 3)
                         if (ragResult.hasContext()) {
                             Log.d(TAG, "RAG retrieved ${ragResult.getChunkCount()} relevant chunks")
-                            ragResult.augmentedPrompt
+                            ragResult.context
                         } else {
                             Log.d(TAG, "No relevant context found, using direct question")
                             null
@@ -188,11 +198,10 @@ class AiChatterFrag : Fragment() {
                 }
                 
                 // Generate response with or without context
-                val reply = if (context != null) {
-                    GGUFChat.ask(modelPath!!, question, context)
-                } else {
-                    GGUFChat.ask(modelPath!!, question)
-                }
+                var reply = GGUFChat.ask(modelPath!!, question, context)
+                
+                // Post-process to remove any asterisks the AI still generated
+                reply = cleanAIOutput(reply)
 
                 withContext(Dispatchers.Main) {
                     messages.add(ChatMessage(reply, false))
@@ -210,6 +219,44 @@ class AiChatterFrag : Fragment() {
                 }
             }
         }
+    }
+    
+    /**
+     * Clean AI output to remove markdown symbols the model might still generate.
+     */
+    private fun cleanAIOutput(text: String): String {
+        return text
+            // Convert bullet asterisks to proper bullets FIRST
+            .replace(Regex("^\\s*\\*+\\s+", RegexOption.MULTILINE), "• ")
+            .replace(Regex("\\n\\s*\\*+\\s+"), "\n• ")
+            // Remove ALL remaining asterisks
+            .replace("**", "")
+            .replace("*", "")
+            // Clean up any underscores used for formatting
+            .replace("__", "")
+            .trim()
+    }
+
+    private fun isGreeting(text: String): Boolean {
+        val greetings = listOf(
+            "hi", "hello", "hey", "good morning", "good afternoon", 
+            "good evening", "good night", "what's up", "whats up",
+            "how are you", "namaste", "sup", "yo", "hola", "hii", "heya"
+        )
+        val normalized = text.trim().lowercase()
+        return greetings.any { normalized.startsWith(it) || normalized == it }
+    }
+
+    private fun handleGreeting(question: String): String {
+        return """Hi there! 👋 I'm your study assistant, ready to help you learn.
+
+I can help you with:
+• Math, Science, English, and Social Science concepts
+• Chapter summaries and explanations  
+• Practice questions and quiz preparation
+• Clarifying any doubts you have
+
+What would you like to know about today?"""
     }
 
     override fun onDestroyView() {

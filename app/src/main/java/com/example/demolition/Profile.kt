@@ -64,25 +64,19 @@ class Profile : Fragment() {
     }
 
     /**
-     * LOAD USER PROFILE PIC (FireStore → Realtime DB → Firebase Storage)
-     * Matches the structure of loadAiProfile() you showed.
+     * LOAD USER PROFILE PIC FROM REALTIME DATABASE
      */
     private fun loadUserProfilePic() {
         val uid = auth.currentUser?.uid ?: return
 
-        firestore.collection("ai_profiles")
-            .document(uid)
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) return@addSnapshotListener
+        realtimeDB.getReference("Users/$uid")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                if (snapshot.exists()) {
+                    val user = snapshot.getValue(User::class.java)
 
-                if (snapshot != null && snapshot.exists()) {
-
-                    val profile = snapshot.toObject(AiProfile::class.java)
-
-                    profile?.let {
-
+                    user?.let {
                         if (it.avatarId.isNotEmpty()) {
-
                             val avatarRes = resources.getIdentifier(
                                 it.avatarId,
                                 "drawable",
@@ -94,7 +88,6 @@ class Profile : Fragment() {
                             } else {
                                 binding.ivProfilePic.setImageResource(R.drawable.user)
                             }
-
                         } else {
                             binding.ivProfilePic.setImageResource(R.drawable.user)
                         }

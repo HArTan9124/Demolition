@@ -201,14 +201,25 @@ class Home : Fragment() {
         val unsynced = reports.filter { !it.synced }
 
         if (unsynced.isEmpty()) {
-            Toast.makeText(context, "Everything is already synced!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "✓ Everything is already synced!", Toast.LENGTH_SHORT).show()
             return
         }
 
+        // Show syncing feedback
+        binding.SyncWithCloud.text = "Syncing..."
+        binding.SyncWithCloud.isEnabled = false
+
         val db = FirebaseFirestore.getInstance()
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        
+        if (uid == null) {
+            Toast.makeText(context, "Please login to sync", Toast.LENGTH_SHORT).show()
+            resetSyncButton()
+            return
+        }
 
         var uploaded = 0
+        var failed = 0
         val total = unsynced.size
 
         for (report in unsynced) {
@@ -233,15 +244,34 @@ class Home : Fragment() {
 
                     ReportManager.saveReports(context, reports)
 
-                    if (uploaded == total) {
-                        Toast.makeText(context, "All reports synced!", Toast.LENGTH_LONG).show()
+                    if (uploaded + failed == total) {
+                        if (failed == 0) {
+                            Toast.makeText(context, "✓ All $total reports synced successfully!", Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(context, "Synced $uploaded/$total reports", Toast.LENGTH_LONG).show()
+                        }
+                        resetSyncButton()
                     }
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(context, "Sync failed: ${e.message}", Toast.LENGTH_LONG).show()
-                    Log.e("FIRESTORE_SYNC", e.message.toString())
+                    failed++
+                    Log.e("FIRESTORE_SYNC", "Failed to sync report: ${e.message}")
+                    
+                    if (uploaded + failed == total) {
+                        if (uploaded > 0) {
+                            Toast.makeText(context, "Synced $uploaded/$total reports", Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(context, "✗ Sync failed: ${e.message}", Toast.LENGTH_LONG).show()
+                        }
+                        resetSyncButton()
+                    }
                 }
         }
+    }
+
+    private fun resetSyncButton() {
+        binding.SyncWithCloud.text = "Sync With cloud"
+        binding.SyncWithCloud.isEnabled = true
     }
 
     override fun onDestroyView() {

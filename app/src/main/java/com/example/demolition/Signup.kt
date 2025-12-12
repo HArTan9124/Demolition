@@ -66,8 +66,9 @@ class Signup : AppCompatActivity() {
         layout.findViewById<TextView>(R.id.toast_text).text = message
 
         val toast = Toast(applicationContext)
-        toast.view = layout
         toast.duration = Toast.LENGTH_SHORT
+        @Suppress("DEPRECATION")
+        toast.view = layout
         toast.show()
     }
 
@@ -76,8 +77,9 @@ class Signup : AppCompatActivity() {
         layout.findViewById<TextView>(R.id.toast_text).text = message
 
         val toast = Toast(applicationContext)
-        toast.view = layout
         toast.duration = Toast.LENGTH_SHORT
+        @Suppress("DEPRECATION")
+        toast.view = layout
         toast.show()
     }
 }

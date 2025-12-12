@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -14,14 +15,17 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var tvUserName: TextView
     private lateinit var ivUserProfile: ImageView
-    private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
+    private lateinit var realtimeDB: FirebaseDatabase
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navView: NavigationView
     private lateinit var bottomNav: BottomNavigationView
@@ -42,18 +46,33 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
+        realtimeDB = FirebaseDatabase.getInstance()
 
         tvUserName = findViewById(R.id.tv_username)
         ivUserProfile = findViewById(R.id.ivToolbarPic)
 
         setupDrawerMenu()
         setupBottomNavigation()
-        loadAiProfile()
+        loadUserProfile()
+        setupBackPressHandler()
 
         // Show Home on startup
         loadFragment(Home())
+    }
+    
+    private fun setupBackPressHandler() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                } else {
+                    // Let system handle back (exit app)
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
 
     private fun setupDrawerMenu() {
@@ -105,41 +124,41 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * LOAD AI PROFILE
+     * LOAD USER PROFILE FROM REALTIME DATABASE
      */
-    private fun loadAiProfile() {
+    private fun loadUserProfile() {
         val userId = auth.currentUser?.uid ?: return
 
-        firestore.collection("ai_profiles")
-            .document(userId)
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) return@addSnapshotListener
+        realtimeDB.getReference("Users/$userId")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        val user = snapshot.getValue(User::class.java)
+                        
+                        user?.let {
+                            // Display user's full name
+                            tvUserName.text = it.name.ifEmpty { 
+                                "${it.firstName} ${it.lastName}".trim()
+                            }
 
-                if (snapshot != null && snapshot.exists()) {
-                    val profile = snapshot.toObject(AiProfile::class.java)
-
-                    profile?.let {
-                        tvUserName.text = it.aiName.ifEmpty { "My AI" }
-
-                        if (it.avatarId.isNotEmpty()) {
-                            val avatarRes = resources.getIdentifier(
-                                it.avatarId,
-                                "drawable",
-                                packageName
-                            )
-                            if (avatarRes != 0)
-                                ivUserProfile.setImageResource(avatarRes)
+                            // Display selected avatar
+                            if (it.avatarId.isNotEmpty()) {
+                                val avatarRes = resources.getIdentifier(
+                                    it.avatarId,
+                                    "drawable",
+                                    packageName
+                                )
+                                if (avatarRes != 0) {
+                                    ivUserProfile.setImageResource(avatarRes)
+                                }
+                            }
                         }
                     }
                 }
-            }
-    }
 
-    override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error silently or show a toast
+                }
+            })
     }
 }

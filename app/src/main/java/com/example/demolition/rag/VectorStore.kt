@@ -92,6 +92,37 @@ class VectorStore {
      * Returns true if the vector store has been indexed
      */
     fun isIndexed(): Boolean = documents.isNotEmpty()
+    
+    /**
+     * Load from cached data (fast initialization)
+     */
+    fun loadFromCache(cachedData: CachedRAGData) {
+        Log.d(TAG, "Loading from cache: ${cachedData.chunks.size} documents...")
+        
+        documents.clear()
+        vectors.clear()
+        
+        documents.addAll(cachedData.chunks)
+        vectors.addAll(cachedData.vectors)
+        
+        // Restore embedder state
+        embedder.loadState(cachedData.documentFrequency, cachedData.totalDocuments)
+        
+        Log.d(TAG, "Loaded from cache successfully")
+    }
+    
+    /**
+     * Get data for caching
+     */
+    fun getCacheData(): CachedRAGData {
+        return CachedRAGData(
+            chunks = documents.toList(),
+            vectors = vectors.toList(),
+            documentFrequency = embedder.getDocumentFrequency(),
+            totalDocuments = embedder.getTotalDocuments(),
+            version = 2 // Match RAGCache.CACHE_VERSION
+        )
+    }
 }
 
 /**

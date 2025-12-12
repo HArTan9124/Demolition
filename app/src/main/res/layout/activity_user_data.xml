@@ -5,16 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/ai_bubble_end"
     tools:context=".UserData">
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/animatedai1" />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 
     <ScrollView
@@ -32,18 +24,38 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="16dp"
-                android:text="Your Arfificial \n friend"
+                android:layout_marginBottom="8dp"
+                android:text="Complete Your Profile"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/spacemono" />
+
+            <!-- Avatar Selection -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Choose Your Avatar"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:textSize="30sp"
-                android:textStyle="bold|italic"
-                android:fontFamily="@font/spacemono" />
+                android:textSize="16sp"
+                android:fontFamily="@font/audi"
+                android:layout_marginBottom="8dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvAvatars"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:clipToPadding="false"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="8dp"
                 app:cardCornerRadius="18dp"
                 app:cardElevation="6dp"
                 app:cardBackgroundColor="#4DFFFFFF">

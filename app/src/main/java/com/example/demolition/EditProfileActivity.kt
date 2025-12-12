@@ -25,10 +25,9 @@ class EditProfileActivity : AppCompatActivity() {
 
     private fun setupListeners() {
 
-        // ⭐ OPEN CustomAi WHEN CLICKING PROFILE IMAGE
+        // Profile image click - can be used for avatar selection in future
         binding.ivProfile.setOnClickListener {
-            val intent = Intent(this, CustomAi::class.java)
-            startActivity(intent)
+            // No action for now
         }
 
         // ⭐ Save to Firestore

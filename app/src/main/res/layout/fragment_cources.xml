@@ -15,7 +15,7 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Syllabus"
+            android:text="Cources"
             android:textSize="30sp"
             android:textStyle="bold"
             android:textColor="#1A1A1A"
@@ -30,6 +30,134 @@
             android:background="#7A4DFF"
             android:layout_gravity="center"
             android:layout_marginBottom="24dp"/>
+
+        <!-- Timetable Card -->
+        <LinearLayout
+            android:id="@+id/timetableContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:background="@drawable/card_white"
+            android:layout_marginBottom="18dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weekly Schedule"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#1A1A1A"
+                android:fontFamily="@font/spacemono"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Day Selector Buttons -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnMonday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:text="Monday"
+                        android:textSize="13sp"
+                        android:textColor="@color/white"
+                        android:background="@drawable/rounded_blue_card"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:layout_marginEnd="8dp"
+                        android:fontFamily="@font/spacemono"/>
+
+                    <Button
+                        android:id="@+id/btnTuesday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:text="Tuesday"
+                        android:textSize="13sp"
+                        android:textColor="#555555"
+                        android:background="@drawable/card_white"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:layout_marginEnd="8dp"
+                        android:fontFamily="@font/spacemono"/>
+
+                    <Button
+                        android:id="@+id/btnWednesday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:text="Wednesday"
+                        android:textSize="13sp"
+                        android:textColor="#555555"
+                        android:background="@drawable/card_white"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:layout_marginEnd="8dp"
+                        android:fontFamily="@font/spacemono"/>
+
+                    <Button
+                        android:id="@+id/btnThursday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:text="Thursday"
+                        android:textSize="13sp"
+                        android:textColor="#555555"
+                        android:background="@drawable/card_white"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:layout_marginEnd="8dp"
+                        android:fontFamily="@font/spacemono"/>
+
+                    <Button
+                        android:id="@+id/btnFriday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:text="Friday"
+                        android:textSize="13sp"
+                        android:textColor="#555555"
+                        android:background="@drawable/card_white"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:fontFamily="@font/spacemono"/>
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Selected Day's Timetable -->
+            <TextView
+                android:id="@+id/timetableDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monday's Schedule"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#7A4DFF"
+                android:fontFamily="@font/spacemono"
+                android:layout_marginBottom="12dp"/>
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="350dp"
+                android:fillViewport="true">
+
+                <TextView
+                    android:id="@+id/timetableSchedule"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Loading..."
+                    android:textSize="14sp"
+                    android:textColor="#555555"
+                    android:lineSpacingExtra="6dp"
+                    android:fontFamily="@font/spacemono"/>
+            </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
 
 
         <LinearLayout

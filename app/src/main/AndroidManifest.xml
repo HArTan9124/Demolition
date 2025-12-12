@@ -46,9 +46,6 @@
             android:name=".UserData"
             android:exported="false" />
         <activity
-            android:name=".CustomAi"
-            android:exported="false" />
-        <activity
             android:name=".Signup"
             android:exported="false" />
         <activity

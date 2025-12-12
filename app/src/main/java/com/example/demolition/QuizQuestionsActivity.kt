@@ -2,12 +2,19 @@ package com.example.demolition
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.demolition.databinding.ActivityQuizQuestionsBinding
 import com.example.demolition.models.Question
 import com.example.demolition.models.QuizData
+import com.example.demolition.models.QuizResult
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
+import java.text.SimpleDateFormat
+import java.util.*
 
 class QuizQuestionsActivity : AppCompatActivity() {
 
@@ -18,13 +25,19 @@ class QuizQuestionsActivity : AppCompatActivity() {
     private var score = 0
     private var selectedOption: String = ""
     private var subject: String = "math"
+    private var chapterTitle: String = ""
+    private var chapterNumber: String = ""
+
+    private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+    private val realtimeDB = FirebaseDatabase.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityQuizQuestionsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val chapterTitle = intent.getStringExtra("chapter_title") ?: ""
+        chapterTitle = intent.getStringExtra("chapter_title") ?: ""
         subject = intent.getStringExtra("subject") ?: "math"
 
         loadQuestions(chapterTitle)
@@ -40,9 +53,12 @@ class QuizQuestionsActivity : AppCompatActivity() {
         val json = assets.open(fileName).bufferedReader().use { it.readText() }
         val quizData = Gson().fromJson(json, QuizData::class.java)
 
-        val allQuestions = quizData.quiz.firstOrNull {
+        val chapter = quizData.quiz.firstOrNull {
             it.chapter_title == chapterTitle
-        }?.questions ?: emptyList()
+        }
+        
+        val allQuestions = chapter?.questions ?: emptyList()
+        chapterNumber = chapter?.chapter_number?.toString() ?: ""
 
         questionList = allQuestions.shuffled().take(5)
     }
@@ -107,13 +123,95 @@ class QuizQuestionsActivity : AppCompatActivity() {
     }
 
     private fun showFinalScore() {
+        val percentage = (score.toDouble() / questionList.size) * 100
+
+        // Save quiz result to Firestore and local storage
+        saveQuizResult(score, questionList.size, percentage)
+
         val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
             .setTitle("Quiz Completed")
-            .setMessage("Your Score: $score / ${questionList.size}")
+            .setMessage("Your Score: $score / ${questionList.size}\nPercentage: ${String.format("%.1f", percentage)}%")
             .setPositiveButton("OK") { _, _ -> finish() }
             .setCancelable(false)
             .create()
 
         dialog.show()
+    }
+
+    private fun saveQuizResult(score: Int, totalQuestions: Int, percentage: Double) {
+        val uid = auth.currentUser?.uid
+        if (uid == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Get current date and time
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+        val currentDate = Date()
+        val dateString = dateFormat.format(currentDate)
+        val timeString = timeFormat.format(currentDate)
+
+        // Get student information from Realtime Database
+        realtimeDB.getReference("Users/$uid").get()
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.exists()) {
+                    Log.e("QUIZ", "User data not found")
+                    return@addOnSuccessListener
+                }
+
+                val studentName = snapshot.child("name").value?.toString() ?: "Unknown"
+                val studentClass = snapshot.child("studentClass").value?.toString() ?: ""
+                val section = snapshot.child("section").value?.toString() ?: ""
+
+                // Create quiz result object
+                val quizResult = QuizResult(
+                    userId = uid,
+                    studentName = studentName,
+                    studentClass = studentClass,
+                    section = section,
+                    subject = subject,
+                    chapterTitle = chapterTitle,
+                    chapterNumber = chapterNumber,
+                    score = score,
+                    totalQuestions = totalQuestions,
+                    percentage = percentage,
+                    dateString = dateString,
+                    timeString = timeString
+                )
+
+                // Save to Firestore
+                firestore.collection("quiz_results")
+                    .document(uid)
+                    .collection("results")
+                    .add(quizResult.toMap())
+                    .addOnSuccessListener { docRef ->
+                        Log.d("QUIZ", "Quiz result saved to Firestore: ${docRef.id}")
+                        Toast.makeText(this, "Quiz result saved to cloud!", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("QUIZ", "Failed to save quiz result to Firestore", e)
+                        Toast.makeText(this, "Failed to sync with cloud: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+
+                // Also save to local storage using ReportManager
+                val report = StudentReport(
+                    name = studentName,
+                    studentClass = "$studentClass-$section",
+                    subject = subject,
+                    chapter = chapterTitle,
+                    date = dateString,
+                    time = timeString,
+                    score = "$score/${totalQuestions}",
+                    synced = true  // Already synced to Firestore
+                )
+                
+                ReportManager.saveReport(this, report)
+                Log.d("QUIZ", "Quiz result saved locally")
+            }
+            .addOnFailureListener { e ->
+                Log.e("QUIZ", "Failed to load student data", e)
+                Toast.makeText(this, "Failed to get student information", Toast.LENGTH_SHORT).show()
+            }
     }
 }
