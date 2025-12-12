@@ -3,6 +3,10 @@ package com.example.demolition
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -201,7 +205,7 @@ class Home : Fragment() {
         val unsynced = reports.filter { !it.synced }
 
         if (unsynced.isEmpty()) {
-            Toast.makeText(context, "✓ Everything is already synced!", Toast.LENGTH_SHORT).show()
+            showCorrectToast("✓ Everything is already synced!")
             return
         }
 
@@ -213,7 +217,7 @@ class Home : Fragment() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid
         
         if (uid == null) {
-            Toast.makeText(context, "Please login to sync", Toast.LENGTH_SHORT).show()
+            showErrorToast("Please login to sync")
             resetSyncButton()
             return
         }
@@ -246,9 +250,9 @@ class Home : Fragment() {
 
                     if (uploaded + failed == total) {
                         if (failed == 0) {
-                            Toast.makeText(context, "✓ All $total reports synced successfully!", Toast.LENGTH_LONG).show()
+                            showCorrectToast("✓ All $total reports synced successfully!")
                         } else {
-                            Toast.makeText(context, "Synced $uploaded/$total reports", Toast.LENGTH_LONG).show()
+                            showInfoToast("Synced $uploaded/$total reports")
                         }
                         resetSyncButton()
                     }
@@ -259,9 +263,9 @@ class Home : Fragment() {
                     
                     if (uploaded + failed == total) {
                         if (uploaded > 0) {
-                            Toast.makeText(context, "Synced $uploaded/$total reports", Toast.LENGTH_LONG).show()
+                            showInfoToast("Synced $uploaded/$total reports")
                         } else {
-                            Toast.makeText(context, "✗ Sync failed: ${e.message}", Toast.LENGTH_LONG).show()
+                            showErrorToast("✗ Sync failed: ${e.message}")
                         }
                         resetSyncButton()
                     }
@@ -277,5 +281,35 @@ class Home : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun showCorrectToast(message: String) {
+        val layout = LayoutInflater.from(requireContext()).inflate(R.layout.correct_toast, null)
+        layout.findViewById<TextView>(R.id.toast_text).text = message
+        val toast = Toast(requireContext())
+        toast.duration = Toast.LENGTH_SHORT
+        @Suppress("DEPRECATION")
+        toast.view = layout
+        toast.show()
+    }
+
+    private fun showErrorToast(message: String) {
+        val layout = LayoutInflater.from(requireContext()).inflate(R.layout.error_toast, null)
+        layout.findViewById<TextView>(R.id.toast_text).text = message
+        val toast = Toast(requireContext())
+        toast.duration = Toast.LENGTH_SHORT
+        @Suppress("DEPRECATION")
+        toast.view = layout
+        toast.show()
+    }
+
+    private fun showInfoToast(message: String) {
+        val layout = LayoutInflater.from(requireContext()).inflate(R.layout.toast_info, null)
+        layout.findViewById<TextView>(R.id.toast_text).text = message
+        val toast = Toast(requireContext())
+        toast.duration = Toast.LENGTH_SHORT
+        @Suppress("DEPRECATION")
+        toast.view = layout
+        toast.show()
     }
 }

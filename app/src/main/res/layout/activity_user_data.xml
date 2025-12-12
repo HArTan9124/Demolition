@@ -58,7 +58,7 @@
                 android:layout_marginTop="8dp"
                 app:cardCornerRadius="18dp"
                 app:cardElevation="6dp"
-                app:cardBackgroundColor="#4DFFFFFF">
+                app:cardBackgroundColor="#8D000000">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -224,11 +224,15 @@
                         android:id="@+id/spinnerGender"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@android:color/transparent"
                         android:padding="12dp"
+                        android:spinnerMode="dropdown"
+                        android:backgroundTint="@color/black"
+                        android:foregroundTint="@color/black"
                         app:counterTextColor="@color/black"
                         app:hintTextColor="@color/black"
                         android:textColorHint="@color/black"
+                        android:outlineAmbientShadowColor="@color/black"
+                        android:outlineSpotShadowColor="@color/black"
                         android:layout_marginTop="8dp"/>
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -249,6 +253,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Class"
                                 android:textSize="18sp"
+                                android:textColorHint="@color/black"
                                 android:textColor="@color/black"
                                 android:paddingStart="4dp"
                                 android:paddingBottom="4dp" />
@@ -257,7 +262,10 @@
                                 android:id="@+id/spinnerClass"
                                 android:layout_width="match_parent"
                                 android:layout_height="50dp"
-                                android:backgroundTint="@android:color/transparent"
+                                android:outlineSpotShadowColor="@color/black"
+                                android:outlineAmbientShadowColor="@color/black"
+                                android:backgroundTint="@color/black"
+                                android:foregroundTint="@color/black"
                                 android:padding="12dp"
                                 android:spinnerMode="dropdown" />
                         </LinearLayout>
@@ -283,8 +291,11 @@
                                 android:id="@+id/spinnerSection"
                                 android:layout_width="match_parent"
                                 android:layout_height="50dp"
-                                android:backgroundTint="@android:color/transparent"
                                 android:padding="12dp"
+                                android:outlineAmbientShadowColor="@color/black"
+                                android:outlineSpotShadowColor="@color/black"
+                                android:backgroundTint="@color/black"
+                                android:foregroundTint="@color/black"
                                 android:spinnerMode="dropdown" />
                         </LinearLayout>
 

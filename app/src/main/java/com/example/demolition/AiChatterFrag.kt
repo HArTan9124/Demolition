@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -87,7 +88,7 @@ class AiChatterFrag : Fragment() {
                     progressBar?.visibility = View.GONE
                     sendButton?.isEnabled = true
                     Log.d(TAG, "Model loaded successfully: $modelPath")
-                    Toast.makeText(context, "AI Model Ready ✓", Toast.LENGTH_SHORT).show()
+                    showCorrectToast("AI Model Ready ✓")
                 }
                 
                 // Initialize RAG pipeline
@@ -98,14 +99,14 @@ class AiChatterFrag : Fragment() {
                     Log.d(TAG, "RAG pipeline ready with ${ragPipeline.getIndexSize()} chunks")
                     
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "📚 Knowledge base loaded", Toast.LENGTH_SHORT).show()
+                        showInfoToast("📚 Knowledge base loaded")
                         addGreeting()
                     }
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to initialize RAG pipeline", e)
                     isRagReady = false
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "⚠ RAG initialization failed, using basic AI", Toast.LENGTH_SHORT).show()
+                        showInfoToast("⚠ RAG initialization failed, using basic AI")
                         addGreeting()
                     }
                 }
@@ -117,11 +118,7 @@ class AiChatterFrag : Fragment() {
                 withContext(Dispatchers.Main) {
                     progressBar?.visibility = View.GONE
                     sendButton?.isEnabled = false
-                    Toast.makeText(
-                        context,
-                        "⚠ Failed to load AI model: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    showErrorToast("⚠ Failed to load AI model: ${e.message}")
                 }
             }
         }
@@ -266,5 +263,35 @@ What would you like to know about today?"""
         inputEditText = null
         sendButton = null
         progressBar = null
+    }
+
+    private fun showCorrectToast(message: String) {
+        val layout = LayoutInflater.from(requireContext()).inflate(R.layout.correct_toast, null)
+        layout.findViewById<TextView>(R.id.toast_text).text = message
+        val toast = Toast(requireContext())
+        toast.duration = Toast.LENGTH_SHORT
+        @Suppress("DEPRECATION")
+        toast.view = layout
+        toast.show()
+    }
+
+    private fun showErrorToast(message: String) {
+        val layout = LayoutInflater.from(requireContext()).inflate(R.layout.error_toast, null)
+        layout.findViewById<TextView>(R.id.toast_text).text = message
+        val toast = Toast(requireContext())
+        toast.duration = Toast.LENGTH_SHORT
+        @Suppress("DEPRECATION")
+        toast.view = layout
+        toast.show()
+    }
+
+    private fun showInfoToast(message: String) {
+        val layout = LayoutInflater.from(requireContext()).inflate(R.layout.toast_info, null)
+        layout.findViewById<TextView>(R.id.toast_text).text = message
+        val toast = Toast(requireContext())
+        toast.duration = Toast.LENGTH_SHORT
+        @Suppress("DEPRECATION")
+        toast.view = layout
+        toast.show()
     }
 }

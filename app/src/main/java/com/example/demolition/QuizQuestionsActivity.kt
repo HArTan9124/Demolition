@@ -3,6 +3,7 @@ package com.example.demolition
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.demolition.databinding.ActivityQuizQuestionsBinding
@@ -109,7 +110,7 @@ class QuizQuestionsActivity : AppCompatActivity() {
     private fun setNextClickListener() {
         binding.btnNext.setOnClickListener {
             if (selectedOption.isEmpty()) {
-                Toast.makeText(this, "Please select an option!", Toast.LENGTH_SHORT).show()
+                showErrorToast("Please select an option!")
                 return@setOnClickListener
             }
 
@@ -141,7 +142,7 @@ class QuizQuestionsActivity : AppCompatActivity() {
     private fun saveQuizResult(score: Int, totalQuestions: Int, percentage: Double) {
         val uid = auth.currentUser?.uid
         if (uid == null) {
-            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+            showErrorToast("User not logged in")
             return
         }
 
@@ -187,11 +188,11 @@ class QuizQuestionsActivity : AppCompatActivity() {
                     .add(quizResult.toMap())
                     .addOnSuccessListener { docRef ->
                         Log.d("QUIZ", "Quiz result saved to Firestore: ${docRef.id}")
-                        Toast.makeText(this, "Quiz result saved to cloud!", Toast.LENGTH_SHORT).show()
+                        showCorrectToast("Quiz result saved to cloud!")
                     }
                     .addOnFailureListener { e ->
                         Log.e("QUIZ", "Failed to save quiz result to Firestore", e)
-                        Toast.makeText(this, "Failed to sync with cloud: ${e.message}", Toast.LENGTH_SHORT).show()
+                        showErrorToast("Failed to sync with cloud: ${e.message}")
                     }
 
                 // Also save to local storage using ReportManager
@@ -211,7 +212,37 @@ class QuizQuestionsActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 Log.e("QUIZ", "Failed to load student data", e)
-                Toast.makeText(this, "Failed to get student information", Toast.LENGTH_SHORT).show()
+                showErrorToast("Failed to get student information")
             }
+    }
+
+    private fun showCorrectToast(message: String) {
+        val layout = layoutInflater.inflate(R.layout.correct_toast, findViewById(R.id.toast_container))
+        layout.findViewById<TextView>(R.id.toast_text).text = message
+        val toast = Toast(applicationContext)
+        toast.duration = Toast.LENGTH_SHORT
+        @Suppress("DEPRECATION")
+        toast.view = layout
+        toast.show()
+    }
+
+    private fun showErrorToast(message: String) {
+        val layout = layoutInflater.inflate(R.layout.error_toast, findViewById(R.id.toast_container))
+        layout.findViewById<TextView>(R.id.toast_text).text = message
+        val toast = Toast(applicationContext)
+        toast.duration = Toast.LENGTH_SHORT
+        @Suppress("DEPRECATION")
+        toast.view = layout
+        toast.show()
+    }
+
+    private fun showInfoToast(message: String) {
+        val layout = layoutInflater.inflate(R.layout.toast_info, findViewById(R.id.toast_container))
+        layout.findViewById<TextView>(R.id.toast_text).text = message
+        val toast = Toast(applicationContext)
+        toast.duration = Toast.LENGTH_SHORT
+        @Suppress("DEPRECATION")
+        toast.view = layout
+        toast.show()
     }
 }

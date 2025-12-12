@@ -8,7 +8,7 @@
     <!-- Neon-style border -->
     <stroke
         android:width="2dp"
-        android:color="#00FFD9" />
+        android:color="#000000" />
 
     <!-- Rounded corners -->
     <corners android:radius="12dp" />
