@@ -324,7 +324,7 @@ User Query
 | First Query | 50-100ms | 50-100ms | ✅ <100ms |
 | Cached Query | 50-100ms | <1ms | ✅ <5ms |
 | RAM Usage | ~1.4-1.7GB | ~1.4GB | ✅ <2GB |
-| APK Size | ~750MB | N/A | ⚠️ Large |
+| APK Size | ~750MB | N/A | ⚠️ >700MB |
 
 ### Device Compatibility
 | Device | Chipset | RAM | Status |
@@ -332,7 +332,7 @@ User Query
 | Redmi Note 5 | SD 625 | 4GB | ✅ Smooth |
 | Samsung A30 | Exynos 7870 | 4GB | ✅ Works well |
 | Realme 3 | Helio P60 | 4GB | ✅ Excellent |
-| Budget 3GB | Various | 3GB | ❌ Not recommended |
+| Budget 3GB | Various | 3GB | ✅ Works well|
 
 ---
 
