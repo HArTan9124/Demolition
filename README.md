@@ -246,36 +246,6 @@ TOP_K_RESULTS = 4           // Max chunks per query
 QUERY_CACHE_SIZE = 50       // LRU cache size
 ```
 
-### Firebase Security Rules
-
-**Firestore** (`firestore.rules`):
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
-}
-```
-
-**Realtime Database** (`database.rules.json`):
-```json
-{
-  "rules": {
-    "Users": {
-      "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid"
-      }
-    }
-  }
-}
-```
-
----
-
 ## 🎯 Key Components Explained
 
 ### RAG Pipeline Architecture
