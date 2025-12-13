@@ -5,12 +5,26 @@
     android:padding="8dp"
     android:gravity="start">
 
-    <TextView
-        android:id="@+id/aiMsg"
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/bubble_ai"
-        android:padding="12dp"
-        android:textColor="@color/black"
-        android:textSize="16sp"/>
+        android:padding="12dp">
+
+        <!-- Regular TextView for non-math content -->
+        <TextView
+            android:id="@+id/aiMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:visibility="visible"/>
+
+        <!-- MathView for LaTeX/math content -->
+        <com.example.demolition.views.MathView
+            android:id="@+id/aiMathView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+    </FrameLayout>
 </LinearLayout>

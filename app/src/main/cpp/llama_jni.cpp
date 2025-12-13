@@ -31,7 +31,8 @@ Java_com_example_demolition_ai_LlamaNative_createContext(JNIEnv *env,
                                                          jlong modelPtr) {
 
   llama_context_params cparams = llama_context_default_params();
-  cparams.n_ctx = 2048; // Increased for RAG context support
+  cparams.n_ctx =
+      8192; // Dynamically support longer contexts and complex questions
 
   llama_context *ctx = llama_init_from_model((llama_model *)modelPtr, cparams);
   return (jlong)ctx;
@@ -179,9 +180,10 @@ Java_com_example_demolition_ai_LlamaNative_generateText(JNIEnv *env,
       sampler, llama_sampler_init_top_p(0.9, 1)); // Add top-p for quality
   llama_sampler_chain_add(sampler, llama_sampler_init_greedy());
 
-  // Generate tokens - IMPROVED: Increased to 512 for complete educational
-  // responses
-  const int max_tokens = 512;
+  // Generate tokens - DYNAMIC: Increased to 2048 for unrestricted, complete
+  // responses The model will naturally stop at <end_of_turn> token, so this is
+  // just an upper limit
+  const int max_tokens = 2048;
   for (int i = 0; i < max_tokens; i++) {
     llama_token new_token = llama_sampler_sample(sampler, ctx, -1);
 

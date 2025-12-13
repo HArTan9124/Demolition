@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class Cources : Fragment() {
+class Courses : Fragment() {
 
     private var _binding: FragmentCourcesBinding? = null
     private val binding get() = _binding!!

@@ -210,7 +210,6 @@ class Home : Fragment() {
         }
 
         // Show syncing feedback
-        binding.SyncWithCloud.text = "Syncing..."
         binding.SyncWithCloud.isEnabled = false
 
         val db = FirebaseFirestore.getInstance()
@@ -274,7 +273,6 @@ class Home : Fragment() {
     }
 
     private fun resetSyncButton() {
-        binding.SyncWithCloud.text = "Sync With cloud"
         binding.SyncWithCloud.isEnabled = true
     }
 

@@ -15,7 +15,7 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cources"
+            android:text="Courses"
             android:textSize="30sp"
             android:textStyle="bold"
             android:textColor="#1A1A1A"

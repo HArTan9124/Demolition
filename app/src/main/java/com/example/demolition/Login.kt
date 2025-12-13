@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.example.demolition.utils.ToastUtils
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 
@@ -32,18 +33,18 @@ class Login : AppCompatActivity() {
             val password = passwordEditText.text.toString().trim()
 
             if (email.isEmpty() || password.isEmpty()) {
-                showErrorToast("Please fill in all fields")
+                ToastUtils.showErrorToast(this, "Please fill in all fields")
                 return@setOnClickListener
             }
 
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        showCorrectToast("Login Successful")
+                        ToastUtils.showCorrectToast(this, "Login Successful")
                         startActivity(Intent(this, MainActivity::class.java))
                         finish()
                     } else {
-                        showErrorToast("Login Failed: ${task.exception?.message}")
+                        ToastUtils.showErrorToast(this, "Login Failed: ${task.exception?.message}")
                     }
                 }
         }
@@ -51,29 +52,5 @@ class Login : AppCompatActivity() {
         signupText.setOnClickListener {
             startActivity(Intent(this, Signup::class.java))
         }
-    }
-
-    // ✅ Move these functions outside onCreate()
-
-    private fun showCorrectToast(message: String) {
-        val layout = layoutInflater.inflate(R.layout.correct_toast, findViewById(R.id.toast_container))
-        layout.findViewById<TextView>(R.id.toast_text).text = message
-
-        val toast = Toast(applicationContext)
-        toast.duration = Toast.LENGTH_SHORT
-        @Suppress("DEPRECATION")
-        toast.view = layout
-        toast.show()
-    }
-
-    private fun showErrorToast(message: String) {
-        val layout = layoutInflater.inflate(R.layout.error_toast, findViewById(R.id.toast_container))
-        layout.findViewById<TextView>(R.id.toast_text).text = message
-
-        val toast = Toast(applicationContext)
-        toast.duration = Toast.LENGTH_SHORT
-        @Suppress("DEPRECATION")
-        toast.view = layout
-        toast.show()
     }
 }

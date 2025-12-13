@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.demolition.R
+import com.example.demolition.views.MathView
 
 class AiChatAdapter(private val messages: ArrayList<com.example.demolition.models.ChatMessage>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -33,8 +34,24 @@ class AiChatAdapter(private val messages: ArrayList<com.example.demolition.model
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val msg = messages[position]
-        if (holder is UserHolder) holder.msg.text = msg.text
-        else if (holder is AiHolder) holder.msg.text = msg.text
+        if (holder is UserHolder) {
+            holder.msg.text = msg.text
+        } else if (holder is AiHolder) {
+            // Check if message contains math notation
+            if (msg.containsMath()) {
+                // Show MathView, hide TextView
+                holder.textView.visibility = View.GONE
+                holder.mathView.visibility = View.VISIBLE
+                
+                // Render LaTeX content
+                holder.mathView.setLatex(msg.text)
+            } else {
+                // Show TextView, hide MathView
+                holder.mathView.visibility = View.GONE
+                holder.textView.visibility = View.VISIBLE
+                holder.textView.text = msg.text
+            }
+        }
     }
 
     override fun getItemCount() = messages.size
@@ -44,6 +61,7 @@ class AiChatAdapter(private val messages: ArrayList<com.example.demolition.model
     }
 
     class AiHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val msg: TextView = view.findViewById(R.id.aiMsg)
+        val textView: TextView = view.findViewById(R.id.aiMsg)
+        val mathView: MathView = view.findViewById(R.id.aiMathView)
     }
 }

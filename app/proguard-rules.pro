@@ -19,3 +19,41 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# ═══════════════════════════════════════════════════════════════
+# FIREBASE RULES
+# ═══════════════════════════════════════════════════════════════
+-keepattributes Signature
+-keepattributes *Annotation*
+
+# Firebase Realtime Database & Firestore
+-keepclassmembers class com.example.demolition.User { *; }
+-keepclassmembers class com.example.demolition.StudentReport { *; }
+-keepclassmembers class com.example.demolition.models.** { *; }
+
+# ═══════════════════════════════════════════════════════════════
+# GSON RULES
+# ═══════════════════════════════════════════════════════════════
+-keepattributes Signature
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken
+
+# Keep data model classes used with Gson
+-keepclassmembers class com.example.demolition.models.** {
+    <fields>;
+    <init>();
+}
+
+# ═══════════════════════════════════════════════════════════════
+# NAVIGATION COMPONENT
+# ═══════════════════════════════════════════════════════════════
+-keepnames class * extends android.os.Parcelable
+-keepnames class * extends java.io.Serializable
+
+# ═══════════════════════════════════════════════════════════════
+# NATIVE LIBRARIES (llama.cpp)
+# ═══════════════════════════════════════════════════════════════
+-keep class com.example.demolition.ai.** { *; }
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
