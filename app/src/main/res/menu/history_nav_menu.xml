@@ -1,23 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <group android:id="@+id/group_learn">
-        <item
-            android:id="@+id/nav_chapters"
-            android:title="📚 Chapters"
-            android:icon="@drawable/book" />
-
-        <item
-            android:id="@+id/nav_quiz"
-            android:title="📝 Quiz"
-            android:icon="@drawable/quiz" />
-    </group>
-
-    <group android:id="@+id/group_ai">
-        <item
-            android:id="@+id/nav_ai"
-            android:title="🤖 AI Tutor"
-            android:icon="@drawable/ai" />
-    </group>
-
+    
+    <item
+        android:id="@+id/nav_chapters"
+        android:icon="@drawable/ic_courses"
+        android:title="📚 Chapters" />
+    
+    <item
+        android:id="@+id/nav_quiz"
+        android:icon="@drawable/ic_quiz"
+        android:title="📝 Quiz" />
+    
+    <item
+        android:id="@+id/nav_ai"
+        android:icon="@drawable/ic_ai"
+        android:title="🤖 AI Tutor" />
+    
 </menu>

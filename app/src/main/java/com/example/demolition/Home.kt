@@ -41,8 +41,51 @@ class Home : Fragment() {
         setupCardClicks()
         setupSyncButton()
         loadStudentClass()
+        loadChapterCounts() // Load chapter counts for each subject
+        
+        // Apply entrance animations
+        applyEntranceAnimations()
 
         return binding.root
+    }
+    
+    // ----------------- LOAD CHAPTER COUNTS -------------------------
+    
+    private fun loadChapterCounts() {
+        try {
+            // Load Math chapters
+            val mathBook = JsonLoader.loadSubjectChapters(requireContext(), "math")
+            binding.tvMathChapters.text = "${mathBook.chapters.size} Chapters"
+            
+            // Load Science chapters
+            val scienceBook = JsonLoader.loadSubjectChapters(requireContext(), "science")
+            binding.tvScienceChapters.text = "${scienceBook.chapters.size} Chapters"
+            
+            // Load English chapters
+            val englishBook = JsonLoader.loadSubjectChapters(requireContext(), "english")
+            binding.tvEnglishChapters.text = "${englishBook.chapters.size} Chapters"
+            
+            // Load SST chapters
+            val sstBook = JsonLoader.loadSubjectChapters(requireContext(), "sst")
+            binding.tvSstChapters.text = "${sstBook.chapters.size} Chapters"
+        } catch (e: Exception) {
+            Log.e("HOME", "Error loading chapter counts", e)
+        }
+    }
+    
+    // ----------------- ENTRANCE ANIMATIONS -------------------
+    
+    private fun applyEntranceAnimations() {
+        val handler = android.os.Handler(android.os.Looper.getMainLooper())
+        val cards = listOf(binding.cardMath, binding.cardScience, binding.cardGeo, binding.cardHistory)
+        
+        cards.forEachIndexed { index, card ->
+            card.alpha = 0f
+            handler.postDelayed({
+                card.alpha = 1f
+                card.startAnimation(android.view.animation.AnimationUtils.loadAnimation(requireContext(), R.anim.card_pop_in))
+            }, (index * 100L))
+        }
     }
 
     // ----------------- TIMETABLE RECYCLER -------------------
@@ -73,115 +116,102 @@ class Home : Fragment() {
         }
     }
 
-    // ----------------- LOAD STUDENT CLASS -------------------------
+    // ----------------- LOAD TIMETABLE FROM LOCAL JSON -------------------------
 
     private fun loadStudentClass() {
-        val uid = auth.currentUser?.uid ?: return
-
-        val userRef = realtimeDB.getReference("Users/$uid")
-
-        userRef.get()
-            .addOnSuccessListener { snap ->
-                if (!snap.exists()) {
-                    showError("User data missing.")
-                    return@addOnSuccessListener
-                }
-
-                val studentClass = snap.child("studentClass").value?.toString()
-                val section = snap.child("section").value?.toString()
-
-                if (studentClass.isNullOrEmpty() || section.isNullOrEmpty()) {
-                    showError("Class or section missing.")
-                    return@addOnSuccessListener
-                }
-
-                val className = "$studentClass-$section"
-                loadTimeTableFromFirestore(className)
-            }
-            .addOnFailureListener {
-                showError("Failed to load class.")
-                Log.e("FIRESTORE", "Error loading student class", it)
-            }
+        // Load timetable from local JSON file
+        loadLocalTimetable()
     }
 
-    // ----------------- FIXED FIRESTORE TIMETABLE PATH -------------------------
-
-    private fun loadTimeTableFromFirestore(className: String) {
-
-        val orgId = "PlOfx4BQ3pgUAwpEP1AUSKcK8tq1"
-
-        firestore.collection("class_timetables")
-            .document(orgId)
-            .collection("classes")
-            .document(className)
-            .get()
-            .addOnSuccessListener { document ->
-
-                if (!document.exists()) {
-                    showError("No timetable found for $className.")
-                    return@addOnSuccessListener
-                }
-
-                val rawSlots = document.get("slots")
-
-                val slots = when (rawSlots) {
-                    is List<*> -> rawSlots.filterIsInstance<Map<String, Any>>()  // NORMAL LIST
-                    is Map<*, *> -> rawSlots.values.filterIsInstance<Map<String, Any>>() // MAP ✓
-                    else -> null
-                }
-
-                if (slots.isNullOrEmpty()) {
-                    showError("Empty timetable.")
-                } else {
-                    processTimetableData(slots)
-                }
-
+    private fun loadLocalTimetable() {
+        // Guard against view being destroyed
+        if (_binding == null) return
+        
+        try {
+            // Check if it's weekend
+            if (TimetableLoader.isWeekend()) {
+                showWeekendMessage()
+                return
             }
-            .addOnFailureListener { e ->
-                showError("Failed to load timetable.")
-                Log.e("FIRESTORE", "Timetable fetch error", e)
+            
+            // Load today's schedule
+            val todaySchedule = TimetableLoader.getTodaySchedule(requireContext(), "9th")
+            
+            if (todaySchedule.isNullOrEmpty()) {
+                showError("No classes scheduled for today")
+                return
             }
+            
+            // Filter only lectures (exclude breaks)
+            val lectures = todaySchedule.filter { it.type == "lecture" }
+            
+            if (lectures.isEmpty()) {
+                showError("No classes today.")
+                return
+            }
+            
+            // Convert to TimetableItem
+            timetableList.clear()
+            lectures.forEach { period ->
+                timetableList.add(TimetableItem(period.subject, period.time))
+            }
+            
+            // Update today's class count
+            binding.tvClassCount.text = lectures.size.toString()
+            
+            // Load and update streak
+            updateStreak()
+            
+            // Update UI
+            timetableAdapter.notifyDataSetChanged()
+            
+        } catch (e: Exception) {
+            Log.e("HOME", "Error loading timetable", e)
+            showError("Failed to load timetable")
+        }
+    }
+    
+    private fun showWeekendMessage() {
+        timetableList.clear()
+        timetableList.add(TimetableItem("🎉 It's the Weekend!", "No classes today - Enjoy!"))
+        binding.tvClassCount.text = "0"
+        updateStreak()
+        timetableAdapter.notifyDataSetChanged()
+    }
+    
+    private fun updateStreak() {
+        // Load streak from SharedPreferences (simulated streak system)
+        val prefs = requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+        val lastOpenDate = prefs.getString("last_open_date", "")
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().time)
+        var streak = prefs.getInt("streak", 1)
+        
+        if (lastOpenDate != currentDate) {
+            // New day, increment streak
+            val yesterday = Calendar.getInstance()
+            yesterday.add(Calendar.DAY_OF_YEAR, -1)
+            val yesterdayStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(yesterday.time)
+            
+            if (lastOpenDate == yesterdayStr) {
+                streak++
+            } else if (lastOpenDate.isNullOrEmpty()) {
+                streak = 1
+            } else {
+                // Streak broken
+                streak = 1
+            }
+            
+            prefs.edit()
+                .putString("last_open_date", currentDate)
+                .putInt("streak", streak)
+                .apply()
+        }
+        
+        binding.tvStreakCount.text = streak.toString()
     }
 
 
     // ----------------- FILTER TODAY CLASSES -------------------------
-
-    private fun processTimetableData(slots: List<Map<String, Any>>) {
-        timetableList.clear()
-
-        val today = SimpleDateFormat("EEEE", Locale.getDefault()).format(Calendar.getInstance().time)
-        var foundTodayClass = false
-
-        for (item in slots) {
-            val day = item["day"]?.toString() ?: ""
-            if (!day.equals(today, ignoreCase = true)) continue
-
-            val subject = item["subject"]?.toString() ?: "Unknown"
-            val index = (item["slotIndex"] as? Number)?.toInt() ?: -1
-            val time = convertSlotToTime(index)
-
-            timetableList.add(TimetableItem(subject, time))
-            foundTodayClass = true
-        }
-
-        if (!foundTodayClass) {
-            showError("No classes today.")
-        } else {
-            timetableAdapter.notifyDataSetChanged()
-        }
-    }
-
-    private fun convertSlotToTime(index: Int): String {
-        return when (index) {
-            0 -> "09:00 AM - 10:00 AM"
-            1 -> "10:00 AM - 11:00 AM"
-            2 -> "11:00 AM - 12:00 PM"
-            3 -> "12:00 PM - 01:00 PM"
-            4 -> "01:00 PM - 02:00 PM"
-            5 -> "02:00 PM - 03:00 PM"
-            else -> "Slot $index"
-        }
-    }
 
     private fun showError(msg: String) {
         timetableList.clear()

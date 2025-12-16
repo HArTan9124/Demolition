@@ -9,9 +9,12 @@
         <item name="android:textSize">11sp</item>
     </style>
 
-    <!-- Bottom Navigation Active Indicator -->
+    <!-- Bottom Navigation Active Indicator - Pill Style -->
     <style name="App.BottomNav.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@color/primary_container</item>
+        <item name="android:color">@color/primary</item>
+        <item name="android:width">100dp</item>
+        <item name="android:height">48dp</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Full</item>
     </style>
 
     <style name="KeyboardKey" parent="Widget.Material3.Button.TextButton">

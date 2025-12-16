@@ -138,6 +138,30 @@ class AiChatterFrag : Fragment() {
         sendButton?.setOnClickListener {
             handleSendMessage()
         }
+
+        // Setup keyboard listener to auto-scroll when keyboard appears
+        setupKeyboardListener()
+    }
+
+    /**
+     * Detects when keyboard appears and auto-scrolls RecyclerView to bottom
+     * to keep input field and latest messages visible.
+     */
+    private fun setupKeyboardListener() {
+        view?.viewTreeObserver?.addOnGlobalLayoutListener {
+            val rootView = view ?: return@addOnGlobalLayoutListener
+            val heightDiff = rootView.rootView.height - rootView.height
+            
+            // If height difference is more than 200dp, keyboard is likely visible
+            val keyboardVisible = heightDiff > 200 * resources.displayMetrics.density
+            
+            if (keyboardVisible && messages.isNotEmpty()) {
+                // Keyboard appeared - scroll to bottom to show latest message and input
+                recyclerView?.post {
+                    recyclerView?.smoothScrollToPosition(messages.size - 1)
+                }
+            }
+        }
     }
 
     private fun setupCustomKeyboard(rootView: View) {
@@ -289,30 +313,46 @@ class AiChatterFrag : Fragment() {
         // Generate AI response with RAG context
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                // Retrieve context using RAG (if available)
-                val context = if (isRagReady) {
+                // ALWAYS use RAG prompt to ensure strict rules are applied
+                val finalPrompt = if (isRagReady) {
                     try {
-                        val ragResult = ragPipeline.query(question, topK = 3)
-                        if (ragResult.hasContext()) {
-                            Log.d(TAG, "RAG retrieved ${ragResult.getChunkCount()} relevant chunks")
-                            ragResult.context
-                        } else {
-                            Log.d(TAG, "No relevant context found, using direct question")
-                            null
-                        }
+                        val ragResult = ragPipeline.query(question, topK = 2)
+                        Log.d(TAG, "RAG query completed: ${ragResult.getChunkCount()} chunks, hasContext=${ragResult.hasContext()}")
+                        // CRITICAL: Always use augmented prompt, even if no context
+                        // The RAG prompt has proper fallback message and strict rules
+                        ragResult.augmentedPrompt
                     } catch (e: Exception) {
-                        Log.e(TAG, "RAG query failed, falling back to direct question", e)
-                        null
+                        Log.e(TAG, "RAG query failed", e)
+                        // Even on error, try to build a basic strict prompt
+                        "You are a teacher. Answer in 3-4 sentences max: $question"
                     }
                 } else {
-                    null
+                    // RAG not ready fallback
+                    "You are a teacher. Answer in 3-4 sentences max: $question"
                 }
                 
-                // Generate response with or without context
-                var reply = GGUFChat.ask(modelPath!!, question, context)
+                // Generate response using the augmented prompt (NO context parameter)
+                var reply = GGUFChat.ask(modelPath!!, finalPrompt, null)
                 
-                // Post-process to remove any asterisks the AI still generated
-                reply = cleanAIOutput(reply)
+                // Check if response indicates a model failure
+                val isModelError = reply.startsWith("⚠️") || 
+                                   reply.startsWith("Error:") ||
+                                   reply.contains("AI model is not available") ||
+                                   reply.contains("model file not found")
+                
+                // Check if the response contains raw RAG chunks (model echoed context)
+                val containsRawChunks = reply.contains("[From:") && reply.contains("]")
+                
+                if (isModelError) {
+                    Log.w(TAG, "AI model returned error: $reply")
+                    // Don't clean error messages, show them as-is
+                } else if (containsRawChunks) {
+                    Log.w(TAG, "AI response contains raw chunks, model may not be generating properly")
+                    reply = "I found some relevant information but couldn't process it properly. Please try asking in a different way, or the AI model may need to be restarted."
+                } else {
+                    // Post-process to remove any asterisks the AI still generated
+                    reply = cleanAIOutput(reply, question)
+                }
 
                 withContext(Dispatchers.Main) {
                     // Replace typing indicator with actual response
@@ -345,12 +385,106 @@ class AiChatterFrag : Fragment() {
     }
     
     /**
-     * Clean AI output to remove markdown symbols and special tokens.
+     * Clean AI output to remove conversation format and extract only model's actual content.
+     * CRITICAL: If response contains "user:" / "model:" format, extract ONLY the model's answers.
+     * CRITICAL: Remove any echo of the user's original question.
      * IMPORTANT: Preserve LaTeX markers ($$, \(, \[, etc.) for math rendering.
      */
-    private fun cleanAIOutput(text: String): String {
-        // First, temporarily replace LaTeX markers to protect them
-        val latexProtected = text
+    private fun cleanAIOutput(text: String, userQuestion: String = ""): String {
+        var result = text.trim()
+        
+        // ============================================================
+        // STEP 0: REMOVE USER QUESTION ECHO
+        // ============================================================
+        // If the response starts with the user's question, remove it
+        if (userQuestion.isNotEmpty()) {
+            val questionLower = userQuestion.trim().lowercase()
+            val lines = result.split("\n")
+            val filteredLines = lines.filter { line ->
+                val lineLower = line.trim().lowercase()
+                // Remove lines that exactly match the question or are very similar
+                !lineLower.equals(questionLower, ignoreCase = true) && 
+                !lineLower.startsWith(questionLower) &&
+                !(lineLower.contains("user") && lineLower.contains(questionLower))
+            }
+            result = filteredLines.joinToString("\n").trim()
+        }
+        
+        // ============================================================
+        // STEP 1: EXTRACT MODEL CONTENT FROM CONVERSATION FORMAT
+        // ============================================================
+        // Check if this looks like a conversation transcript
+        val hasConversationFormat = result.contains(Regex("\\b(user|model|assistant)\\s*:", RegexOption.IGNORE_CASE))
+        
+        if (hasConversationFormat) {
+            Log.d(TAG, "Detected conversation format, extracting model content only...")
+            
+            // Split into sections by "model:" or "assistant:" markers
+            val modelSections = mutableListOf<String>()
+            
+            // Find all text that comes after "model:" or "assistant:" (case-insensitive)
+            // and before the next "user:" or end of text
+            val pattern = Regex(
+                """(?:^|\n)\s*(?:model|assistant)\s*:?\s*(.*?)(?=\n\s*(?:user|model|assistant)\s*:|$)""",
+                setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
+            )
+            
+            val matches = pattern.findAll(result)
+            for (match in matches) {
+                val content = match.groupValues[1].trim()
+                if (content.isNotEmpty()) {
+                    modelSections.add(content)
+                }
+            }
+            
+            if (modelSections.isNotEmpty()) {
+                // Join all model responses (in case there were multiple exchanges)
+                result = modelSections.joinToString("\n\n").trim()
+                Log.d(TAG, "Extracted ${modelSections.size} model response(s)")
+            } else {
+                // Fallback: couldn't extract properly, just remove labels
+                Log.w(TAG, "Could not extract model content, using fallback cleanup")
+                result = result
+                    .replace(Regex("^\\s*user\\s*:.*?(?=\\n\\s*(?:model|assistant)|$)", setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE)), "")
+                    .replace(Regex("^\\s*(?:model|assistant)\\s*:?\\s*", setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE)), "")
+                    .trim()
+            }
+        }
+        
+        // ============================================================
+        // STEP 2: STOP AT CONVERSATION MARKERS OR REPETITION
+        // ============================================================
+        val lines = result.split("\n")
+        val cleanedLines = mutableListOf<String>()
+        val seenParagraphs = mutableSetOf<String>()
+        
+        for (line in lines) {
+            val trimmedLine = line.trim().lowercase()
+            
+            // Stop if we hit a standalone conversation marker
+            if (trimmedLine == "user" || trimmedLine == "model" || trimmedLine == "assistant" ||
+                trimmedLine == "user:" || trimmedLine == "model:" || trimmedLine == "assistant:" ||
+                trimmedLine == "..." || trimmedLine == "```") {
+                break
+            }
+            
+            // Detect repetition/loops
+            if (trimmedLine.length > 20) {
+                if (seenParagraphs.contains(trimmedLine)) {
+                    break
+                }
+                seenParagraphs.add(trimmedLine)
+            }
+            
+            cleanedLines.add(line)
+        }
+        
+        result = cleanedLines.joinToString("\n")
+        
+        // ============================================================
+        // STEP 3: PROTECT LATEX AND CLEAN MARKDOWN
+        // ============================================================
+        val latexProtected = result
             .replace("$$", "§§LATEX_BLOCK§§")
             .replace("\\(", "§§LATEX_INLINE_START§§")
             .replace("\\)", "§§LATEX_INLINE_END§§")
@@ -359,18 +493,20 @@ class AiChatterFrag : Fragment() {
         
         // Clean markdown formatting and special tokens
         val cleaned = latexProtected
-            // Remove special Gemma tokens that shouldn't be visible
+            // Remove special Gemma tokens
             .replace("<end_of_turn>", "")
             .replace("<start_of_turn>", "")
             .replace("<eos>", "")
             .replace("<bos>", "")
-            // Convert bullet asterisks to proper bullets FIRST
+            // Remove any remaining conversation labels
+            .replace(Regex("\\s*(?:user|model|assistant)\\s*:?\\s*", RegexOption.IGNORE_CASE), "")
+            // Convert bullet asterisks to proper bullets
             .replace(Regex("""^\s*\*+\s+""", RegexOption.MULTILINE), "• ")
             .replace(Regex("""\n\s*\*+\s+"""), "\n• ")
-            // Remove ALL remaining asterisks (but LaTeX is already protected)
+            // Remove ALL remaining asterisks (LaTeX is protected)
             .replace("**", "")
             .replace("*", "")
-            // Clean up any underscores used for formatting
+            // Clean up formatting underscores
             .replace("__", "")
             .trim()
         

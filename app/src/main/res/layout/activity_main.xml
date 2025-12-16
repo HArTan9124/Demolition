@@ -42,9 +42,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
                     android:background="@android:color/transparent"
-                    app:itemIconTint="@color/nav_item_color"
-                    app:itemTextColor="@color/nav_item_color"
-                    app:labelVisibilityMode="unlabeled"
+                    app:itemIconTint="@color/nav_item_pill_color"
+                    app:itemTextColor="@color/nav_item_pill_color"
+                    app:labelVisibilityMode="selected"
+                    app:itemHorizontalTranslationEnabled="false"
+                    app:itemActiveIndicatorStyle="@style/App.BottomNav.ActiveIndicator"
                     app:menu="@menu/bottom_nav_menu" />
             </androidx.cardview.widget.CardView>
         </LinearLayout>

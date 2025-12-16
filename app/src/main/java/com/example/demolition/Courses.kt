@@ -101,102 +101,64 @@ class Courses : Fragment() {
         }
     }
     
-    // ----------------- LOAD STUDENT CLASS -------------------------
+    // ----------------- LOAD TIMETABLE FROM LOCAL JSON -------------------------
     
     private fun loadStudentClass() {
-        val uid = auth.currentUser?.uid ?: run {
-            showError("Please login to view timetable")
-            return
-        }
-
-        val userRef = realtimeDB.getReference("Users/$uid")
-
-        userRef.get()
-            .addOnSuccessListener { snap ->
-                if (!snap.exists()) {
-                    showError("User data missing")
-                    return@addOnSuccessListener
-                }
-
-                val studentClass = snap.child("studentClass").value?.toString()
-                val section = snap.child("section").value?.toString()
-
-                if (studentClass.isNullOrEmpty() || section.isNullOrEmpty()) {
-                    showError("Class or section missing")
-                    return@addOnSuccessListener
-                }
-
-                val className = "$studentClass-$section"
-                loadTimeTableFromFirestore(className)
-            }
-            .addOnFailureListener {
-                showError("Failed to load class data")
-                Log.e("Cources", "Error loading student class", it)
-            }
+        // Load timetable from local JSON file
+        loadLocalTimetable()
     }
-
-    // ----------------- LOAD TIMETABLE FROM FIRESTORE -------------------------
     
-    private fun loadTimeTableFromFirestore(className: String) {
-        val orgId = "PlOfx4BQ3pgUAwpEP1AUSKcK8tq1"
-
-        firestore.collection("class_timetables")
-            .document(orgId)
-            .collection("classes")
-            .document(className)
-            .get()
-            .addOnSuccessListener { document ->
-
-                if (!document.exists()) {
-                    showError("No timetable found for $className")
-                    return@addOnSuccessListener
-                }
-
-                val rawSlots = document.get("slots")
-
-                val slots = when (rawSlots) {
-                    is List<*> -> rawSlots.filterIsInstance<Map<String, Any>>()
-                    is Map<*, *> -> rawSlots.values.filterIsInstance<Map<String, Any>>()
-                    else -> null
-                }
-
-                if (slots.isNullOrEmpty()) {
-                    showError("Empty timetable")
-                } else {
-                    processTimetableData(slots)
-                }
-
-            }
-            .addOnFailureListener { e ->
+    private fun loadLocalTimetable() {
+        try {
+            val timetable = TimetableLoader.loadTimetable(requireContext(), "9th")
+            
+            if (timetable == null) {
                 showError("Failed to load timetable")
-                Log.e("Cources", "Timetable fetch error", e)
+                return
             }
+            
+            processLocalTimetableData(timetable)
+            
+        } catch (e: Exception) {
+            showError("Error loading timetable: ${e.message}")
+            Log.e("Courses", "Timetable load error", e)
+        }
     }
 
-    // ----------------- PROCESS FULL WEEK'S TIMETABLE -------------------------
+    // ----------------- PROCESS FULL WEEK'S TIMETABLE FROM LOCAL JSON -------------------------
     
-    private fun processTimetableData(slots: List<Map<String, Any>>) {
+    private fun processLocalTimetableData(timetable: TimetableData) {
         weeklyTimetable.clear()
         
-        // Initialize all days
-        daysOfWeek.forEach { day ->
-            weeklyTimetable[day] = mutableListOf()
-        }
-
-        // Group classes by day
-        for (item in slots) {
-            val day = item["day"]?.toString() ?: continue
-            val subject = item["subject"]?.toString() ?: "Unknown"
-            val index = (item["slotIndex"] as? Number)?.toInt() ?: -1
-            val time = convertSlotToTime(index)
-
-            weeklyTimetable[day]?.add(TimetableItem(subject, time))
-        }
+        // Initialize all days with data from JSON
+        weeklyTimetable["Monday"] = timetable.schedule.monday
+            .filter { it.type == "lecture" }
+            .map { TimetableItem(it.subject, it.time) }
+            .toMutableList()
+            
+        weeklyTimetable["Tuesday"] = timetable.schedule.tuesday
+            .filter { it.type == "lecture" }
+            .map { TimetableItem(it.subject, it.time) }
+            .toMutableList()
+            
+        weeklyTimetable["Wednesday"] = timetable.schedule.wednesday
+            .filter { it.type == "lecture" }
+            .map { TimetableItem(it.subject, it.time) }
+            .toMutableList()
+            
+        weeklyTimetable["Thursday"] = timetable.schedule.thursday
+            .filter { it.type == "lecture" }
+            .map { TimetableItem(it.subject, it.time) }
+            .toMutableList()
+            
+        weeklyTimetable["Friday"] = timetable.schedule.friday
+            .filter { it.type == "lecture" }
+            .map { TimetableItem(it.subject, it.time) }
+            .toMutableList()
         
-        // Sort each day's classes by time (slot index)
-        weeklyTimetable.forEach { (_, classes) ->
-            classes.sortBy { it.time }
-        }
+        // Weekend - empty lists
+        weeklyTimetable["Saturday"] = mutableListOf()
+        weeklyTimetable["Sunday"] = mutableListOf()
 
         displaySelectedDay()
     }
@@ -219,7 +181,10 @@ class Courses : Fragment() {
         binding.timetableDay.text = "$selectedDay's Schedule"
         binding.timetableContainer.visibility = View.VISIBLE
         
-        if (classes.isEmpty()) {
+        // Check if it's weekend
+        if (selectedDay.equals("Saturday", ignoreCase = true) || selectedDay.equals("Sunday", ignoreCase = true)) {
+            binding.timetableSchedule.text = "🎉 It's the Weekend!\n\n📅 No classes scheduled\n\n🌟 Enjoy your day off!"
+        } else if (classes.isEmpty()) {
             binding.timetableSchedule.text = "📅 No classes scheduled for $selectedDay\n\n🎉 Enjoy your free day!"
         } else {
             val scheduleText = buildString {

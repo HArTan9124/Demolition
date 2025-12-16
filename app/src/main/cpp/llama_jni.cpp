@@ -175,15 +175,16 @@ Java_com_example_demolition_ai_LlamaNative_generateText(JNIEnv *env,
       llama_sampler_chain_default_params();
   llama_sampler *sampler = llama_sampler_chain_init(sampler_params);
   llama_sampler_chain_add(
-      sampler, llama_sampler_init_temp(0.7)); // Add temperature for variety
+      sampler,
+      llama_sampler_init_temp(0.3)); // Lower temp for focused, direct answers
   llama_sampler_chain_add(
       sampler, llama_sampler_init_top_p(0.9, 1)); // Add top-p for quality
   llama_sampler_chain_add(sampler, llama_sampler_init_greedy());
 
-  // Generate tokens - DYNAMIC: Increased to 2048 for unrestricted, complete
-  // responses The model will naturally stop at <end_of_turn> token, so this is
-  // just an upper limit
-  const int max_tokens = 2048;
+  // Generate tokens - Limited to 512 for concise, mobile-friendly responses
+  // The model will naturally stop at <end_of_turn> token, so this is just an
+  // upper limit
+  const int max_tokens = 512;
   for (int i = 0; i < max_tokens; i++) {
     llama_token new_token = llama_sampler_sample(sampler, ctx, -1);
 

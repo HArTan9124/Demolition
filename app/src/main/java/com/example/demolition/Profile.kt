@@ -105,15 +105,37 @@ class Profile : Fragment() {
         // EDIT PROFILE → Open EditProfileActivity
         binding.btnEditProfile.setOnClickListener {
             startActivity(Intent(requireContext(), EditProfileActivity::class.java))
+            activity?.overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
 
-        // LOGOUT
+        // LOGOUT with confirmation dialog
         binding.btnLogout.setOnClickListener {
-            auth.signOut()
-            val intent = Intent(requireContext(), Login::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
+            showLogoutConfirmationDialog()
         }
+    }
+    
+    private fun showLogoutConfirmationDialog() {
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+            .setTitle("🚪 Logout")
+            .setMessage("Are you sure you want to logout?")
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .setPositiveButton("Logout") { dialog, _ ->
+                dialog.dismiss()
+                performLogout()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setCancelable(true)
+            .show()
+    }
+    
+    private fun performLogout() {
+        auth.signOut()
+        val intent = Intent(requireContext(), Login::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        activity?.overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
 
     override fun onDestroyView() {
