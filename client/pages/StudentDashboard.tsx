@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { Card } from "@/components/Card";
 import { RecentActivity } from "@/components/RecentActivity";
+import { TodoFlowchart } from "@/components/TodoFlowchart";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 import { useActivity } from "@/context/ActivityContext";
@@ -406,13 +407,9 @@ export default function StudentDashboard() {
         {/* Recent Activity */}
         <RecentActivity />
 
-        {/* Pending Work */}
+        {/* Daily Schedule Planner */}
         <section className="space-y-4">
-          <h3 className="text-2xl font-bold">Pending Work</h3>
-
-          <Card className="p-8 text-center text-muted-foreground font-light">
-            <p>No pending assignments. Keep up the great work! 🎉</p>
-          </Card>
+          <TodoFlowchart />
         </section>
       </div>
 
