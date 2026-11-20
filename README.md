@@ -30,14 +30,6 @@
 - **Natural Conversations**: Understands greetings, follow-up questions
 
 
-
-### 📝 Interactive Assessments
-- Multiple Choice Questions (MCQs)
-- True/False evaluations
-- Fill in the blanks
-- Subject-wise organization
-- Progress tracking with Firebase sync
-
 ### 👤 User Management
 - Firebase Authentication (Email/Password)
 - 14+ custom avatars with visual feedback
