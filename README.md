@@ -16,7 +16,6 @@
 - **🧠 Smart RAG System** - Retrieval-Augmented Generation for accurate answers
 - **💾 RAM Optimized** - Runs smoothly on 4GB devices (tested on budget phones)
 - **📱 Modern UI** - Material Design 3 with smooth animations
-- **🎯 NCERT Aligned** - Complete curriculum for Classes 9-12
 - **🔒 Privacy First** - Data stays on your device, no cloud dependencies
 
 ---
