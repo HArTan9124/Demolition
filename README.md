@@ -23,20 +23,14 @@
 
 ## ✨ Features
 
-### 🤖 AI Study Assistant
+### 🤖
 - **On-Device LLM**: Gemma-3-1B model (717MB, Q3 quantized)
 - **RAG Pipeline**: TF-IDF embeddings for context-aware responses
 - **Anti-Hallucination**: Strict prompt engineering prevents off-topic answers
 - **Persistent Caching**: 10x faster startup after first launch
 - **Natural Conversations**: Understands greetings, follow-up questions
 
-### 📖 Complete Curriculum Coverage
-| Subject | Content |
-|---------|---------|
-| 📐 **Mathematics** | Algebra, Geometry, Trigonometry, Statistics (Chapters 1-12) |
-| 🔬 **Science** | Physics, Chemistry, Biology (Complete syllabus) |
-| 📝 **English** | Beehive (Main) + Moments (Supplementary) |
-| 🌍 **Social Science** | History, Geography, Economics, Political Science |
+
 
 ### 📝 Interactive Assessments
 - Multiple Choice Questions (MCQs)
