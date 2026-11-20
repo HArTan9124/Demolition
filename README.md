@@ -1,6 +1,5 @@
-# 📚 Demolition - AI-Powered Offline Education
+# 📚 LLM Based Research Paper Assistant
 
-> Transform your Android device into a personal AI tutor. Learn Classes 9-12 NCERT curriculum offline with cutting-edge on-device AI.
 
 [![Android](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android)](https://android.com)
 [![Kotlin](https://img.shields.io/badge/Language-Kotlin-7F52FF?logo=kotlin)](https://kotlinlang.org)
